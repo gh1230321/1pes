@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>LCD Categories</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+      
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Cairo', sans-serif;
+        background: linear-gradient(135deg, #3A6073, #16222A);
+        color: #fff;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-x: hidden;
+        padding-bottom: 60px;
+    }
+
+    header {
+        width: 100%;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 1rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        position: fixed;
+        top: 0;
+        z-index: 10;
+        backdrop-filter: blur(5px);
+    }
+
+    .header-title {
+        font-size: clamp(0.9rem, 3vw, 1rem);
+        color: #fff;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .header-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .header-btn {
+        width: clamp(50px, 15vw, 60px);
+        height: 30px;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        color: #fff;
+        font-size: clamp(0.8rem, 2vw, 0.9rem);
+        font-family: 'Cairo', sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: all 0.3s ease;
+        overflow: hidden !important;
+        clip-path: inset(0 0 0 0 round 5px) !important;
+    }
+
+    .exit-btn {
+        background: #8B0000;
+    }
+    .exit-btn:hover {
+        background: #A00000;
+        transform: scale(1.05);
+    }
+    .exit-btn:active {
+        transform: scale(0.95) !important;
+        box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5) !important;
+        clip-path: inset(0 0 0 0 round 5px) !important;
+    }
+
+    .refresh-btn {
+        background: #3A6073;
+    }
+    .refresh-btn:hover {
+        background: #4A7888;
+        transform: scale(1.05);
+    }
+    .refresh-btn:active {
+        transform: scale(0.95) !important;
+        box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5) !important;
+        clip-path: inset(0 0 0 0 round 5px) !important;
+    }
+
+    .container {
+        width: 90%;
+        max-width: 1200px;
+        margin: 50px auto 0;
+        text-align: center;
+        z-index: 1;
+    }
+
+    .categories-container {
+        padding: 1.5rem;
+        background: linear-gradient(135deg, rgba(58, 96, 115, 0.8), rgba(22, 34, 42, 0.8));
+        border-radius: 25px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(5px);
+        margin-bottom: 1rem;
+    }
+
+    .logo-container {
+        width: clamp(100px, 15vw, 150px);
+        height: clamp(100px, 15vw, 150px);
+        margin: 0 auto 1.5rem;
+        border-radius: 50%;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        transition: transform 0.5s ease;
+    }
+
+    .logo-container:hover {
+        transform: rotate(360deg);
+    }
+
+    .logo-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    h1 {
+        font-size: clamp(1.5rem, 5vw, 2.5rem);
+        color: #fff;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .categories {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 1rem;
+        justify-items: center;
+    }
+
+    .category-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: clamp(90px, 15vw, 120px);
+        height: clamp(90px, 15vw, 120px);
+        background: linear-gradient(45deg, #3A6073, #1A2F3A);
+        border-radius: 50%;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+        cursor: pointer;
+        color: #fff;
+        font-size: clamp(0.8rem, 2vw, 0.9rem);
+        text-align: center;
+        padding: 0.5rem;
+        overflow: hidden !important;
+        clip-path: circle(50%) !important;
+    }
+
+    .category-btn i {
+        font-size: clamp(1rem, 2.5vw, 1.2rem);
+        margin-bottom: 0.5rem;
+    }
+
+    .category-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(58, 96, 115, 0.5);
+        background: linear-gradient(45deg, #4A7888, #2A3F4A);
+    }
+
+    .category-btn:active {
+        transform: scale(0.95) !important;
+        box-shadow: inset 0 6px 12px rgba(0, 0, 0, 0.5) !important;
+        background: linear-gradient(45deg, #2A3F4A, #3A6073) !important;
+        clip-path: circle(50%) !important;
+    }
+
+    .results-container {
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, rgba(58, 96, 115, 0.8), rgba(22, 34, 42, 0.8));
+        border-radius: 25px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(5px);
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-card {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.2));
+        border-radius: 15px;
+        padding: 1.5rem;
+        width: 100%;
+        min-height: 220px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden !important;
+        clip-path: inset(0 0 0 0 round 15px) !important;
+    }
+
+    .result-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(255, 255, 255, 0.2);
+    }
+
+    .result-card:active {
+        transform: scale(0.95) !important;
+        box-shadow: inset 0 6px 12px rgba(0, 0, 0, 0.5) !important;
+        clip-path: inset(0 0 0 0 round 15px) !important;
+    }
+
+    .result-card img {
+        width: clamp(80px, 12vw, 120px);
+        height: clamp(80px, 12vw, 120px);
+        border-radius: 50%;
+        margin-bottom: 1rem;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .result-card .item-name {
+        font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+        margin-bottom: 0.75rem;
+        text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        text-align: center;
+        word-wrap: break-word;
+        max-width: 100%;
+    }
+
+    .result-card .price {
+        font-size: clamp(0.8rem, 1.5vw, 1rem);
+        padding: 0.4rem 0.8rem;
+        background: linear-gradient(45deg, #4A7888, #3A6073);
+        border-radius: 10px;
+        font-weight: bold;
+        box-shadow: 0 5px 15px rgba(58, 96, 115, 0.4);
+    }
+
+    .no-results {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        border-radius: 10px;
+        text-align: center;
+        font-size: clamp(0.9rem, 2vw, 1rem);
+        margin: 1.5rem auto;
+        width: 100%;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        overflow: hidden !important;
+        clip-path: inset(0 0 0 0 round 10px) !important;
+    }
+
+    .no-results:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 10px rgba(255, 255, 255, 0.2);
+    }
+
+    .no-results:active {
+        transform: scale(0.95) !important;
+        box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5) !important;
+        clip-path: inset(0 0 0 0 round 10px) !important;
+    }
+
+    .scroll-to-top {
+        position: fixed;
+        bottom: 50px;
+        right: 20px;
+        width: clamp(40px, 10vw, 50px);
+        height: clamp(40px, 10vw, 50px);
+        background: #8B0000;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        transition: all 0.3s ease;
+        z-index: 11;
+        display: none;
+        overflow: hidden !important;
+        clip-path: circle(50%) !important;
+    }
+
+    .scroll-to-top:hover {
+        transform: scale(1.1);
+        background: #A00000;
+    }
+    .scroll-to-top:active {
+        transform: scale(0.95) !important;
+        box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5) !important;
+        clip-path: circle(50%) !important;
+    }
+
+    .scroll-to-top i {
+        font-size: clamp(1rem, 2.5vw, 1.5rem);
+        color: #fff;
+        line-height: 1;
+        display: block;
+    }
+
+    footer {
+        font-size: clamp(1rem, 2vw, 1.2rem);
+        padding: 0.5rem;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.1);
+        width: 100%;
+        text-align: center;
+        position: fixed;
+        bottom: 0;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+        backdrop-filter: blur(5px);
+    }
+
+    @media (max-width: 900px) {
+        .categories {
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        }
+    }
+
+    @media (max-width: 600px) {
+        .categories {
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+        }
+        .category-btn {
+            font-size: clamp(0.7rem, 2.5vw, 0.8rem);
+            width: clamp(80px, 15vw, 100px); /* تعديل للشاشات الصغيرة */
+            height: clamp(80px, 15vw, 100px);
+        }
+        .category-btn i {
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+        }
+    }
+
+    @media (max-width: 400px) {
+        .categories {
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        }
+    }
+</style>
+</head>
+<body>
+    <header>
+        <div class="header-buttons">
+            <button class="header-btn refresh-btn" onclick="refreshData()">تحديث</button>
+            <button class="header-btn exit-btn" onclick="goBack()">رجوع</button>
+        </div>
+        <div class="header-title">مكتب عسل</div>
+    </header>
+
+    <div class="container">
+        <div class="categories-container">
+            <div class="logo-container">
+                <img src="images/logo.png" alt="Logo">
+            </div>
+            <h1>LCD Categories</h1>
+            <div class="categories">
+                <div class="category-btn" onclick="filterLCDCategory(1, 'سامسونك')"><i class="fas fa-mobile-alt"></i>سامسونك</div>
+                <div class="category-btn" onclick="filterLCDCategory(2, 'هواوي')"><i class="fas fa-mobile-alt"></i>هواوي</div>
+                <div class="category-btn" onclick="filterLCDCategory(3, 'ايفون')"><i class="fab fa-apple"></i>ايفون</div>
+                <div class="category-btn" onclick="filterLCDCategory(4, 'نوكيا')"><i class="fas fa-mobile-alt"></i>نوكيا</div>
+                <div class="category-btn" onclick="filterLCDCategory(5, 'شاومي')"><i class="fas fa-mobile-alt"></i>شاومي</div>
+                <div class="category-btn" onclick="filterLCDCategory(6, 'انفنكس')"><i class="fas fa-mobile-alt"></i>انفنكس</div>
+                <div class="category-btn" onclick="filterLCDCategory(7, 'ريلمي')"><i class="fas fa-mobile-alt"></i>ريلمي</div>
+                <div class="category-btn" onclick="filterLCDCategory(8, 'تكنو')"><i class="fas fa-mobile-alt"></i>تكنو</div>
+                <div class="category-btn" onclick="filterLCDCategory(9, 'اوبو')"><i class="fas fa-mobile-alt"></i>اوبو</div>
+                <div class="category-btn" onclick="filterLCDCategory(10, 'فيفو')"><i class="fas fa-mobile-alt"></i>فيفو</div>
+                <div class="category-btn" onclick="filterLCDCategory(11, 'ايتل')"><i class="fas fa-mobile-alt"></i>ايتل</div>
+                <div class="category-btn" onclick="filterLCDCategory(12, 'TCL')"><i class="fas fa-mobile-alt"></i>TCL</div>
+                <div class="category-btn" onclick="filterLCDCategory(13, 'لينوفو')"><i class="fas fa-mobile-alt"></i>لينوفو</div>
+                <div class="category-btn" onclick="filterLCDCategory(14, 'بلاك فيو')"><i class="fas fa-mobile-alt"></i>بلاك فيو</div>
+                <div class="category-btn" onclick="filterLCDCategory(15, 'هايسنس')"><i class="fas fa-mobile-alt"></i>هايسنس</div>
+                <div class="category-btn" onclick="filterLCDCategory(16, 'موتورلا')"><i class="fas fa-mobile-alt"></i>موتورلا</div>
+                <div class="category-btn" onclick="filterLCDCategory(17, 'ZTE')"><i class="fas fa-mobile-alt"></i>ZTE</div>
+                <div class="category-btn" onclick="filterLCDCategory(18, 'ALCATEL')"><i class="fas fa-mobile-alt"></i>ALCATEL</div>
+                <div class="category-btn" onclick="filterHousingCategory()"><i class="fas fa-tools"></i>شواصي</div>
+                <div class="category-btn" onclick="filterBatteryCategory()"><i class="fas fa-battery-full"></i>بطاريات</div>
+                <div class="category-btn" onclick="filterBackCategory()"><i class="fas fa-camera"></i>اظهر</div>
+                <div class="category-btn" onclick="filterCameraCategory()"><i class="fas fa-camera"></i>كاميرات</div>
+                <div class="category-btn" onclick="filterChargingCategory()"><i class="fas fa-charging-station"></i>بورد شحن</div>
+                <div class="category-btn" onclick="filterBatteryCategory()"><i class="fas fa-ellipsis-h"></i>اخرى</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="results" class="results-container" style="display: none;"></div>
+    
+    
+ <div id="scrollToTop" class="scroll-to-top" onclick="scrollToTop()">
+    <i class="fas fa-arrow-up"></i>
+</div>
+
+
+    <footer>
+        <p>© 2025 Assal Office. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const dropboxMainFile = "https://assap-app-project.ahmed-al-bayatii-90.workers.dev/file1" + "?t=" + new Date().getTime();
+        let database = {};
+
+        async function loadExcelFiles() {
+            try {
+                const mainResponse = await fetch(dropboxMainFile);
+                if (!mainResponse.ok) throw new Error('Failed to fetch Excel file');
+                const mainBuffer = await mainResponse.arrayBuffer();
+                const mainWorkbook = XLSX.read(mainBuffer, { type: "array" });
+                database.LCD = XLSX.utils.sheet_to_json(mainWorkbook.Sheets["LCD"] || {});
+                database.HOUSING = XLSX.utils.sheet_to_json(mainWorkbook.Sheets["HOUSING"] || {});
+                database.BATTERY = XLSX.utils.sheet_to_json(mainWorkbook.Sheets["BATTERY"] || {});
+                database.BACK = XLSX.utils.sheet_to_json(mainWorkbook.Sheets["BACK"] || {});
+                database.CAMERA = XLSX.utils.sheet_to_json(mainWorkbook.Sheets["CAMERA"] || {});
+                database.CHARGING = XLSX.utils.sheet_to_json(mainWorkbook.Sheets["CHARGING"] || {});
+                console.log("Excel files loaded successfully");
+            } catch (error) {
+                console.error("Error loading Excel files:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'خطأ',
+                    text: 'فشل في تحميل البيانات، حاول مرة أخرى!',
+                });
+            }
+        }
+
+        async function displayResults(items, title) {
+            const resultsContainer = document.getElementById('results');
+            const scrollToTopBtn = document.getElementById('scrollToTop');
+            resultsContainer.innerHTML = '';
+
+            if (items.length === 0) {
+                resultsContainer.innerHTML = `<div class="no-results">لا توجد بيانات لـ ${title} حالياً</div>`;
+                resultsContainer.style.display = 'grid';
+                scrollToTopBtn.style.display = 'none';
+                return;
+            }
+
+            items.sort((a, b) => {
+                return (a["Item Name"] || a["Item"]).localeCompare(b["Item Name"] || b["Item"], 'en');
+            });
+
+            items.sort((a, b) => {
+                const baseNameA = (a["Item Name"] || a["Item"]).split('(')[0].trim();
+                const baseNameB = (b["Item Name"] || b["Item"]).split('(')[0].trim();
+                const priceA = parseFloat(a["Price"]) || 0;
+                const priceB = parseFloat(b["Price"]) || 0;
+
+                if (baseNameA === baseNameB) {
+                    return priceB - priceA;
+                }
+                return 0;
+            });
+
+            let htmlContent = '';
+            items.forEach((item) => {
+                htmlContent += `
+                    <div class="result-card">
+                        <img src="images/lcd.png" alt="Image">
+                        <div class="item-name">${item["Item Name"]}</div>
+                        <div class="price">${item["Price"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} دينار</div>
+                    </div>
+                `;
+            });
+
+            resultsContainer.innerHTML = htmlContent;
+            resultsContainer.style.display = 'grid';
+            scrollToTopBtn.style.display = 'none';
+
+            setTimeout(() => {
+                resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
+        async function filterLCDCategory(categoryNumber, categoryName) {
+            if (!database.LCD) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'تحذير',
+                    text: 'البيانات لم يتم تحميلها بعد، اضغط على تحديث!',
+                });
+                return;
+            }
+            const filteredItems = database.LCD.filter(item => item["الصنف"] == categoryNumber);
+            await displayResults(filteredItems, categoryName);
+        }
+
+        async function filterHousingCategory() {
+            if (!database.HOUSING) return;
+            await displayResults(database.HOUSING, 'شواصي');
+        }
+
+        async function filterBatteryCategory() {
+            if (!database.BATTERY) return;
+            await displayResults(database.BATTERY, 'بطاريات');
+        }
+
+        async function filterBackCategory() {
+            if (!database.BACK) return;
+            await displayResults(database.BACK.map(item => ({
+                "Item Name": item["Item Name"],
+                "Price": item["Price"] ? item["Price"] : 'غير متوفر'
+            })), 'اظهر');
+        }
+
+        async function filterCameraCategory() {
+            if (!database.CAMERA) return;
+            await displayResults(database.CAMERA.map(item => ({
+                "Item Name": item["Item Name"],
+                "Price": item["Price"] ? item["Price"] : 'غير متوفر'
+            })), 'كاميرات');
+        }
+
+        async function filterChargingCategory() {
+            if (!database.CHARGING) return;
+            await displayResults(database.CHARGING.map(item => ({
+                "Item Name": item["Item Name"],
+                "Price": item["Price"] ? item["Price"] : 'غير متوفر'
+            })), 'بورد شحن');
+        }
+
+      async function refreshData() {
+    try {
+        // عرض رسالة التحميل
+        Swal.fire({
+            title: 'جاري التحديث',
+            text: 'يرجى الانتظار...',
+            allowOutsideClick: false,
+            background: 'linear-gradient(135deg, rgba(26, 58, 71, 0.9), rgba(10, 21, 26, 0.9))',
+            color: '#fff', // لون النص أبيض ليظهر بوضوح على الخلفية الداكنة
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // انتظار ثانية واحدة
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // عرض رسالة النجاح لمدة 1.5 ثانية ثم تختفي تلقائيًا
+        Swal.fire({
+            title: 'تم التحديث',
+            text: 'تم تحديث البيانات بنجاح',
+            icon: 'success',
+            background: 'linear-gradient(135deg, rgba(26, 58, 71, 0.9), rgba(10, 21, 26, 0.9))',
+            color: '#fff',
+            showConfirmButton: false, // إخفاء زر موافق
+            timer: 1500 // النافذة تختفي بعد 1.5 ثانية
+        });
+    } catch (error) {
+        // عرض رسالة الخطأ
+        Swal.fire({
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء التحديث',
+            icon: 'error',
+            background: 'linear-gradient(135deg, rgba(26, 58, 71, 0.9), rgba(10, 21, 26, 0.9))',
+            color: '#fff',
+            confirmButtonText: 'موافق'
+        });
+    }
+}
+
+     function goBack() {
+    window.location.href = 'index.html'; // إعادة توجيه إلى صفحة index.html
+}
+
+    // دالة الصعود
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// التحكم في الظهور والإخفاء بناءً على التمرير
+window.addEventListener('scroll', () => {
+    const scrollToTopBtn = document.getElementById('scrollToTop');
+    const resultsContainer = document.getElementById('results');
+    if (resultsContainer.style.display === 'grid' && window.scrollY > 100) {
+        scrollToTopBtn.style.display = 'flex';
+    } else {
+        scrollToTopBtn.style.display = 'none';
+    }
+});
+
+
+        loadExcelFiles();
+    </script>
+</body>
+</html>

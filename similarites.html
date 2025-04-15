@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>توافقات - Assal Office</title>
+
+    <!-- المكتبات المطلوبة -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Tajawal:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+       body {
+    font-family: 'Cairo', sans-serif;
+    background: linear-gradient(135deg, #1E2A44, #0F172A);
+    color: #E2E8F0;
+    min-height: 100vh;
+    background-size: 400% 400%;
+    animation: gradientAnimation 10s ease infinite;
+    overflow-x: hidden;
+    position: relative;
+    direction: rtl;
+    padding-top: 20px; /* تغيير من 50px إلى 20px */
+    padding-bottom: 50px;
+}
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* تصميم الهيدر */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 12px;
+            z-index: 2000;
+        }
+
+        .header-title {
+            font-family: 'Cairo', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #A3BFFA;
+            text-shadow: 0 1px 2px rgba(163, 191, 250, 0.4);
+            letter-spacing: 0.5px;
+            order: 1; /* على اليمين */
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 8px;
+            order: 0; /* على اليسار */
+            position: relative;
+        }
+
+       .header-btn {
+    padding: 3px 10px;
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(135deg, #5A6388, #4A5275);
+    color: #fff;
+    font-family: 'Cairo', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    position: relative;
+    overflow: hidden !important;
+    clip-path: inset(0 0 0 0 round 8px) !important; /* قص يطابق border-radius */
+}
+
+.header-btn:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+}
+
+.header-btn:active {
+    transform: scale(0.95) !important;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5) !important; /* ظل داخلي */
+    clip-path: inset(0 0 0 0 round 8px) !important; /* قص صارم */
+}
+
+.refresh-btn {
+    background: linear-gradient(135deg, #6B7280, #4B5563);
+}
+.refresh-btn:hover {
+    background: linear-gradient(135deg, #9CA3AF, #6B7280);
+}
+.refresh-btn:active {
+    background: linear-gradient(135deg, #4B5563, #6B7280) !important; /* لون أغمق */
+}
+
+.back-btn {
+    background: linear-gradient(135deg, #8B0000, #B22222);
+}
+.back-btn:hover {
+    background: linear-gradient(135deg, #CD5C5C, #8B0000);
+}
+.back-btn:active {
+    background: linear-gradient(135deg, #B22222, #8B0000) !important; /* لون أغمق */
+}
+
+.notes-btn {
+    background: linear-gradient(135deg, #4682B4, #20B2AA);
+    position: relative;
+    padding-right: 26px; /* زيادة المسافة على اليمين لتوسيع الزر وإبعاد العداد */
+    padding-left: 12px; /* زيادة المسافة على اليسار للتوازن */
+}
+
+.notes-btn:hover {
+    background: linear-gradient(135deg, #20B2AA, #4682B4);
+}
+
+.notes-btn:active {
+    background: linear-gradient(135deg, #20B2AA, #4682B4) !important;
+}
+
+.notes-count {
+    position: absolute;
+    top: 50%;
+    right: 4px; /* تقليل المسافة لإبعاد العداد عن النص */
+    transform: translateY(-50%);
+    background: #DC143C;
+    color: #fff;
+    border-radius: 50%;
+    width: 16px; /* زيادة الحجم من 14px إلى 16px */
+    height: 16px;
+    font-size: 9px; /* زيادة حجم الخط من 8px إلى 9px */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+    display: none;
+}
+
+.notes-count.visible {
+    display: flex;
+}
+
+        /* الحاوية الرئيسية */
+        .main-container {
+    max-width: 1400px;
+    margin: 0 auto; /* حذف margin-top لأنه لم يعد ضروريًا */
+    padding: 0 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* توسيط عمودي */
+    align-items: center; /* توسيط أفقي */
+    min-height: calc(100vh - 80px); /* الـ 80px هو مجموع ارتفاع الهيدر والفوتر (40px + 40px) */
+    gap: 20px;
+}
+        .container {
+    width: 600px;
+    background: linear-gradient(135deg, rgba(26, 58, 71, 0.9), rgba(10, 21, 26, 0.9));
+    padding: 10px 40px;
+    min-height: 550px;
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(0, 206, 209, 0.4);
+    border: 1px solid rgba(0, 206, 209, 0.5);
+    margin: 0 20px; /* حذف الـ 50px العلوي والسفلي */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+        h1 {
+            font-size: clamp(24px, 5vw, 36px);
+            color: #D4AF37;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        /* القائمة المنسدلة */
+        .category-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 25px;
+            position: relative;
+            text-align: center;
+        }
+
+        .category-container select#categorySelect {
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 30px;
+            background: linear-gradient(45deg, rgba(30, 42, 68, 0.95), rgba(58, 96, 115, 0.3));
+            border: 2px solid #D4AF37;
+            color: #E2E8F0;
+            font-size: 16px;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+            cursor: pointer;
+        }
+
+        .select2-container .select2-selection--single {
+            height: 50px;
+            padding: 10px;
+            border-radius: 30px;
+            background: linear-gradient(45deg, rgba(30, 42, 68, 0.95), rgba(58, 96, 115, 0.3));
+            border: 2px solid #D4AF37;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+            text-align: center;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #E2E8F0;
+            font-size: 16px;
+            font-family: 'Tajawal', sans-serif;
+            line-height: 30px;
+            text-align: center;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 50px;
+            width: 30px;
+            left: 10px;
+        }
+
+       .select2-dropdown {
+    background: #1E2A44;
+    border: 2px solid #D4AF37;
+    border-radius: 20px; /* حواف بيضاوية أكثر */
+    font-family: 'Cairo', sans-serif;
+    color: #E2E8F0;
+    text-align: center;
+    margin-top: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 300px !important; /* عرض ثابت ليكون مربع */
+    max-width: 300px !important; /* تحديد العرض الأقصى */
+}
+
+.select2-results {
+    max-height: 500px; /* زيادة الارتفاع */
+    overflow-y: auto;
+}
+
+        .select2-results__options {
+            padding: 0;
+            margin: 0;
+        }
+
+        .select2-results__option {
+    padding: 12px 20px;
+    font-size: 15px;
+    text-align: center;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.5);
+    transition: all 0.3s ease;
+    min-height: 40px;
+    line-height: 16px;
+    overflow: hidden !important;
+    clip-path: inset(0 0 0 0 round 10px) !important; /* قص بحواف بيضاوية */
+}
+
+.select2-results__option--highlighted {
+    background: linear-gradient(45deg, #4A8296, #D4AF37);
+    color: #fff;
+}
+
+.select2-results__option:active {
+    transform: scale(0.95) !important;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5) !important; /* ظل داخلي */
+    background: linear-gradient(45deg, #D4AF37, #4A8296) !important; /* لون معكوس */
+    clip-path: inset(0 0 0 0 round 10px) !important; /* قص صارم */
+}
+        .select2-results__option:last-child {
+            border-bottom: none;
+        }
+
+        
+
+        .select2-search--dropdown {
+            display: none;
+        }
+
+        /* حاوية البحث */
+        .search-container {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(30, 42, 68, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+            animation: orbitPulse 4s infinite ease-in-out;
+            margin: 0 auto;
+        }
+
+        @keyframes orbitPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .search-inner {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .search-container input {
+            width: 200px;
+            padding: 12px 20px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #D4AF37;
+            color: #E2E8F0;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .search-container input:focus {
+            width: 220px;
+            border-color: #A3BFFA;
+            box-shadow: 0 0 15px rgba(163, 191, 250, 0.5);
+        }
+
+       .search-container button {
+    margin-top: 15px;
+    padding: 12px 25px;
+    border-radius: 25px;
+    background: linear-gradient(45deg, #D4AF37, #A3BFFA);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    font-family: 'Tajawal', sans-serif;
+    overflow: hidden !important;
+    clip-path: inset(0 0 0 0 round 25px) !important; /* قص يطابق border-radius */
+}
+
+.search-container button:hover {
+    background: linear-gradient(45deg, #A3BFFA, #D4AF37);
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(163, 191, 250, 0.5);
+}
+
+.search-container button:active {
+    transform: scale(0.95) !important;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5) !important; /* ظل داخلي */
+    background: linear-gradient(45deg, #A3BFFA, #D4AF37) !important; /* لون ثابت */
+    clip-path: inset(0 0 0 0 round 25px) !important; /* قص صارم */
+}
+
+
+        /* حاوية النتائج */
+       .results-container {
+    background: rgba(30, 42, 68, 0.95);
+    border-radius: 20px;
+    padding: 25px;
+    width: 90vw;
+    max-width: 800px;
+    box-shadow: 0 10px 30px rgba(0, 206, 209, 0.4); /* نفس ظل .container */
+    border: 1px solid rgba(0, 206, 209, 0.5); /* نفس الحدود المضيئة */
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    min-height: 300px;
+    margin-top: 10px;
+}
+
+        .results-container.visible {
+            display: flex;
+        }
+
+        .products-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            gap: 20px;
+        }
+
+      .result-card {
+    background: linear-gradient(135deg, #2A3A5A, #1A2638); /* تدرج أفتح قليلاً */
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    width: clamp(300px, 40vw, 450px);
+    min-height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6); /* ظل أقوى للبروز */
+    border: 1px solid rgba(212, 175, 55, 0.3); /* حدود ذهبية خفيفة */
+    transform: perspective(600px) rotateY(0deg) translateZ(10px);
+}
+        .result-card:hover {
+            transform: perspective(600px) rotateY(-5deg) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .result-card img {
+            width: clamp(100px, 18vw, 120px);
+            height: clamp(100px, 18vw, 120px);
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 3px solid #D4AF37;
+            transition: transform 0.3s ease;
+        }
+
+        .result-card:hover img {
+            transform: scale(1.15);
+        }
+
+        .result-card h4 {
+            font-size: clamp(18px, 3vw, 22px);
+            margin: 10px 0;
+            color: #E2E8F0;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 700;
+            word-wrap: break-word;
+            max-width: 100%;
+        }
+
+       .result-card button {
+    padding: 10px 20px;
+    border-radius: 20px;
+    background: linear-gradient(45deg, #D4AF37, #A3BFFA);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    width: auto;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    overflow: hidden !important;
+    clip-path: inset(0 0 0 0 round 20px) !important; /* قص يطابق border-radius */
+}
+
+.result-card button:hover {
+    background: linear-gradient(45deg, #A3BFFA, #D4AF37);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(163, 191, 250, 0.5);
+}
+
+.result-card button:active {
+    transform: scale(0.95) !important;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5) !important; /* ظل داخلي */
+    background: linear-gradient(45deg, #A3BFFA, #D4AF37) !important; /* لون ثابت */
+    clip-path: inset(0 0 0 0 round 20px) !important; /* قص صارم */
+}
+
+
+
+        /* سلة الملاحظات */
+        .notes-drawer {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 40px 20px;
+            transition: right 0.4s ease;
+            z-index: 2000;
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+            overflow-y: auto;
+            direction: rtl;
+        }
+
+        .notes-drawer.active {
+            right: 0;
+        }
+
+        .notes-drawer h3 {
+            font-size: 26px;
+            margin-bottom: 30px;
+            color: #4A8296;
+            text-shadow: 0 0 10px rgba(0, 206, 209, 0.5);
+            text-align: center;
+        }
+
+        .notes-items-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .notes-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid #4A8296;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .notes-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #FF1493;
+        }
+
+        .notes-item span {
+            font-size: 14px;
+            color: #e0e0e0;
+            text-align: center;
+            flex: 1;
+            padding: 0 10px;
+        }
+
+       .notes-item button {
+    padding: 8px 15px;
+    border-radius: 10px;
+    background: linear-gradient(45deg, #8B0000, #DC143C);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(139, 0, 0, 0.5);
+    overflow: hidden !important;
+    clip-path: inset(0 0 0 0 round 10px) !important; /* قص يطابق border-radius */
+}
+
+.notes-item button:hover {
+    background: linear-gradient(45deg, #DC143C, #8B0000);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(220, 20, 60, 0.7);
+}
+
+.notes-item button:active {
+    transform: scale(0.95) !important;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5) !important; /* ظل داخلي */
+    background: linear-gradient(45deg, #DC143C, #8B0000) !important; /* لون ثابت */
+    clip-path: inset(0 0 0 0 round 10px) !important; /* قص صارم */
+}
+
+        /* زر الرجوع إلى الأعلى */
+      .scroll-to-top {
+    position: fixed;
+    bottom: 60px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #9B2C2C, #E53E3E);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: 700;
+    font-family: 'Tajawal', sans-serif;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(163, 191, 250, 0.5);
+    display: none;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden !important;
+    clip-path: circle(50%) !important; /* قص دائري */
+}
+
+.scroll-to-top:hover {
+    background: linear-gradient(45deg, #E53E3E, #9B2C2C);
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(163, 191, 250, 0.7);
+}
+
+.scroll-to-top:active {
+    transform: scale(0.95) !important;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5) !important; /* ظل داخلي */
+    background: linear-gradient(45deg, #E53E3E, #9B2C2C) !important; /* لون ثابت */
+    clip-path: circle(50%) !important; /* قص صارم */
+}
+        .scroll-to-top.visible {
+            display: flex;
+        }
+
+        /* الفوتر */
+        footer {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding: 0;
+            width: 100%;
+            height: 40px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.4);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* استجابة الشاشة */
+        @media (max-width: 768px) {
+            .notes-item {
+                padding: 10px;
+            }
+
+            .notes-item button {
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+
+            .notes-item span {
+                font-size: 13px;
+            }
+
+            .main-container {
+                margin-top: 60px;
+                padding: 0 20px;
+            }
+
+            .container, .results-container {
+                width: 95vw;
+                padding: 15px;
+            }
+
+            .category-container {
+                max-width: 300px;
+            }
+
+            .category-container select#categorySelect {
+                font-size: 14px;
+                padding: 12px 15px;
+            }
+
+            .search-container {
+                width: 250px;
+                height: 250px;
+            }
+
+            .search-container input {
+                width: 180px;
+            }
+
+            .notes-drawer {
+                width: 100%;
+                right: -100%;
+            }
+
+            .result-card {
+                width: clamp(250px, 80vw, 350px);
+            }
+        }
+
+        /* تنسيق SweetAlert2 */
+        .swal2-popup {
+            background: linear-gradient(135deg, #1E2A44, #2D3E66);
+            border-radius: 20px;
+            padding: 20px;
+            font-family: 'Cairo', sans-serif;
+            text-align: center;
+        }
+
+        .swal2-title {
+            color: #D4AF37;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .swal2-html-container {
+            color: #E2E8F0 !important;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .swal2-input {
+            width: 300px;
+            padding: 14px 20px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #D4AF37;
+            color: #E2E8F0;
+            font-size: 16px;
+            font-family: 'Cairo', sans-serif;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .swal2-confirm, .swal2-cancel {
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: 'Tajawal', sans-serif;
+            border: none;
+            cursor: pointer;
+        }
+
+        .swal2-confirm {
+            background: linear-gradient(45deg, #D4AF37, #A3BFFA);
+            color: #fff;
+        }
+
+        .swal2-cancel {
+            background: linear-gradient(45deg, #E53E3E, #9B2C2C);
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <!-- الهيدر مع زر "رجوع" -->
+    <header class="header">
+        <div class="header-title">مكتب عسل</div>
+        <div class="header-buttons">
+            <button class="header-btn back-btn" onclick="goBack()" title="رجوع"><i class="fas fa-arrow-right"></i> رجوع</button>
+            <button class="header-btn refresh-btn" onclick="refreshData()" title="تحديث البيانات"><i class="fas fa-sync"></i> تحديث</button>
+            <button class="header-btn notes-btn" onclick="toggleNotes()" title="عرض الملاحظات"><i class="fas fa-sticky-note"></i> ملاحظات <span class="notes-count" id="headerNotesCount">0</span></button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="container">
+            <h1>توافقات</h1>
+            <div class="category-container">
+                <select id="categorySelect" onchange="filterByCategory()">
+                    <option value="" disabled selected>اختر الصنف</option>
+                    <option value="1">توافقات الشاشات</option>
+                    <option value="2">توافقات البطاريات</option>
+                    <option value="3">توافقات جرس النغمات</option>
+                    <option value="4">توافقات سماعة الاتصال</option>
+                    <option value="5">توافقات الكاميرات</option>
+                    <option value="6">توافقات عدسة الكاميرا</option>
+                    <option value="7">توافقات بورد الشحن</option>
+                    <option value="8">توافقات قواعد الشحن</option>
+                    <option value="9">توافقات كونكتر الشاشة</option>
+                    <option value="10">توافقات البصمات</option>
+                    <option value="11">توافقات شريط الهيتفون</option>
+                    <option value="12">توافقات شريط البور والصوت</option>
+                    <option value="13">توافقات الگلاسات</option>
+                    <option value="14">توافقات شريط الهوم</option>
+                    <option value="15">توافقات الآيسيات</option>
+                    <option value="16">توافقات فلاتات الشاشة</option>
+                    <option value="17">توافقات هولدر السيم كارت</option>
+                    <option value="18">توافقات البصمات تحت الشاشة</option>
+                    <option value="19">توافقات كيبلات الإشارة</option>
+                    <option value="20">توافقات منوعة</option>
+                </select>
+            </div>
+            <div class="search-container">
+                <div class="search-inner">
+                    <input type="text" id="searchInput" placeholder="ابحث عن توافقات...">
+                    <button onclick="searchItems()"><i class="fas fa-search"></i> بحث</button>
+                </div>
+            </div>
+        </div>
+        <div class="results-container" id="resultsContainer">
+            <div class="products-grid" id="results"></div>
+        </div>
+    </div>
+
+    <div class="notes-drawer" id="notesDrawer">
+        <i class="fas fa-times close-btn" onclick="toggleNotes()"></i>
+        <h3>سلة الملاحظات</h3>
+        <div class="notes-items-container" id="notesItems"></div>
+    </div>
+
+    <button class="scroll-to-top" onclick="scrollToTop()"><i class="fas fa-arrow-up"></i></button>
+
+    <!-- الفوتر -->
+    <footer>
+        <p>جميع الحقوق محفوظة - مكتب عسل</p>
+    </footer>
+
+    <script>
+        const dropboxSimilaritesFile = "https://assap-app-project.ahmed-al-bayatii-90.workers.dev/file2" + "?t=" + new Date().getTime();
+        let database = {};
+        let notes = JSON.parse(localStorage.getItem('notes')) || [];
+
+        $(document).ready(function() {
+            $('#categorySelect').select2({
+                dir: "rtl",
+                placeholder: "اختر الصنف",
+                allowClear: true,
+                width: '100%',
+                minimumResultsForSearch: Infinity,
+                dropdownAutoWidth: true,
+                dropdownCss: { 'max-height': '400px' },
+                dropdownParent: $('.category-container') // ربط القائمة بالحاوية لتحديد الموضع
+            });
+            updateNotes();
+        });
+
+        async function loadSimilaritesData() {
+            const response = await fetch(dropboxSimilaritesFile);
+            const buffer = await response.arrayBuffer();
+            const workbook = XLSX.read(buffer, { type: "array" });
+            database.SIMILARITES = XLSX.utils.sheet_to_json(workbook.Sheets["SIMILARITES"] || {}).map(item => ({
+                Item: item.Item || "غير مسمى",
+                Category: item.Category || 20
+            }));
+        }
+
+        window.onload = async function() {
+            if (localStorage.getItem("similaritesAccess") !== "granted") {
+                const { value: password } = await Swal.fire({
+                    title: 'دخول محمي',
+                    text: 'أدخل كلمة المرور للوصول',
+                    icon: 'question',
+                    input: 'password',
+                    inputPlaceholder: 'كلمة المرور',
+                    showCancelButton: true,
+                    confirmButtonText: 'تأكيد',
+                    cancelButtonText: 'إغلاق'
+                });
+
+                if (password === "1990") {
+                    localStorage.setItem("similaritesAccess", "granted");
+                    await loadSimilaritesData();
+                    updateNotes();
+                } else if (password) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'خطأ',
+                        text: 'كلمة المرور خاطئة!',
+                        showCancelButton: true,
+                        cancelButtonText: 'إغلاق',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    }).then(() => {
+                        window.location.href = 'index.html';
+                    });
+                } else {
+                    window.location.href = 'index.html';
+                }
+            } else {
+                await loadSimilaritesData();
+                updateNotes();
+            }
+        };
+
+        document.getElementById("searchInput").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                searchItems();
+            }
+        });
+
+        function normalizeString(str) {
+            return str.replace(/\s+/g, '').toLowerCase();
+        }
+
+        function filterByCategory() {
+            const category = document.getElementById("categorySelect").value;
+            if (!category) return;
+
+            const results = database.SIMILARITES.filter(item => String(item.Category) === category);
+            displayResults(results);
+            scrollToResults();
+        }
+
+        function searchItems() {
+            const searchInput = document.getElementById("searchInput").value.trim();
+            const category = document.getElementById("categorySelect").value;
+            const resultsContainer = document.getElementById("resultsContainer");
+
+            if (!searchInput && !category) {
+                Swal.fire({
+                    title: 'حقل فارغ',
+                    text: 'يرجى اختيار صنف أو كتابة اسم العنصر قبل البحث',
+                    icon: 'warning',
+                    showConfirmButton: true,
+                    confirmButtonText: 'موافق',
+                    showCancelButton: true,
+                    cancelButtonText: 'إغلاق'
+                });
+                resultsContainer.classList.remove('visible');
+                return;
+            }
+
+            let results = database.SIMILARITES;
+            if (category) {
+                results = results.filter(item => String(item.Category) === category);
+            }
+            if (searchInput) {
+                const query = normalizeString(searchInput);
+                results = results.filter(item => normalizeString(item["Item"]).includes(query));
+            }
+
+            if (results.length === 0) {
+                Swal.fire({
+                    title: 'لا توجد نتائج',
+                    text: 'ماكو توافقات بهذا الاسم أو الصنف',
+                    icon: 'info',
+                    showConfirmButton: true,
+                    confirmButtonText: 'موافق',
+                    showCancelButton: true,
+                    cancelButtonText: 'إغلاق'
+                });
+                resultsContainer.classList.remove('visible');
+                return;
+            }
+
+            displayResults(results);
+            scrollToResults();
+        }
+
+        function displayResults(results) {
+            const resultsContainer = document.getElementById("resultsContainer");
+            const productsGrid = document.getElementById("results");
+            productsGrid.innerHTML = results.map(item => `
+                <div class="result-card">
+                    <img src="images/default.png" alt="Item Image">
+                    <h4>${item["Item"]}</h4>
+                    <button onclick="addToNotes('${item["Item"]}')">أضف إلى الملاحظات</button>
+                </div>
+            `).join('');
+
+            if (results.length > 0) {
+                resultsContainer.classList.add('visible');
+            } else {
+                resultsContainer.classList.remove('visible');
+            }
+
+            const scrollButton = document.querySelector('.scroll-to-top');
+            if (results.length > 5) {
+                scrollButton.classList.add('visible');
+            } else {
+                scrollButton.classList.remove('visible');
+            }
+        }
+
+        function scrollToResults() {
+            const resultsContainer = document.getElementById("resultsContainer");
+            if (resultsContainer.classList.contains('visible')) {
+                resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function toggleNotes() {
+            const notesDrawer = document.getElementById('notesDrawer');
+            notesDrawer.classList.toggle('active');
+        }
+
+        function addToNotes(itemName) {
+            notes.push({ name: itemName });
+            localStorage.setItem('notes', JSON.stringify(notes));
+            updateNotes();
+        }
+
+        function updateNotes() {
+            const notesItems = document.getElementById('notesItems');
+            const headerNotesCount = document.getElementById('headerNotesCount');
+            notesItems.innerHTML = '';
+
+            notes.forEach((item, index) => {
+                const notesItem = document.createElement('div');
+                notesItem.classList.add('notes-item');
+                notesItem.innerHTML = `
+                    <span>${item.name}</span>
+                    <button onclick="removeFromNotes(${index})">إزالة</button>
+                `;
+                notesItems.appendChild(notesItem);
+            });
+
+            headerNotesCount.textContent = notes.length;
+            if (notes.length > 0) {
+                headerNotesCount.classList.add('visible');
+            } else {
+                headerNotesCount.classList.remove('visible');
+            }
+        }
+
+        function removeFromNotes(index) {
+            notes.splice(index, 1);
+            localStorage.setItem('notes', JSON.stringify(notes));
+            updateNotes();
+        }
+
+        function goBack() {
+            window.location.href = "index.html";
+        }
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+       async function refreshData() {
+    Swal.fire({
+        title: 'جاري التحديث',
+        text: 'يرجى الانتظار...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    try {
+        await loadSimilaritesData();
+        // تأخير إضافي بعد انتهاء التحميل
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        Swal.fire({
+            title: 'تم التحديث',
+            text: 'تم تحديث البيانات بنجاح',
+            icon: 'success',
+            confirmButtonText: 'موافق'
+        });
+    } catch (error) {
+        Swal.fire({
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء التحديث',
+            icon: 'error',
+            confirmButtonText: 'موافق'
+        });
+    }
+}
+    </script>
+</body>
+</html>

@@ -1,0 +1,2344 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر عسل برو</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(135deg, #3A6073, #16222A);
+            color: #e0e0e0;
+            min-height: 100vh;
+            animation: gradientAnimation 10s ease infinite;
+            background-size: 400% 400%;
+            direction: rtl;
+            padding-top: 50px;
+            padding-bottom: 50px;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            z-index: 2000;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+            font-family: 'Cairo', sans-serif;
+        }
+
+   .header-title { 
+    font-size: 18px; 
+    font-weight: 700; 
+    color: #fff; 
+}
+
+.header-buttons { 
+    display: flex; 
+    gap: 8px; 
+}
+
+.header-btn {
+    padding: 5px 12px;
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(135deg, #5A6388, #4A5275);
+    color: #fff;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Cairo', sans-serif;
+    position: relative;
+    overflow: hidden !important;
+    clip-path: inset(0 0 0 0 round 8px) !important; /* نفس الـ border-radius */
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3); /* نفس الظل الخارجي */
+}
+
+.header-btn:hover { 
+    transform: scale(1.05); /* نفس تأثير الـ hover */
+}
+
+.header-btn:active {
+    transform: scale(0.95) !important; /* نفس تأثير الضغط */
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5) !important; /* ظل داخلي */
+    clip-path: inset(0 0 0 0 round 8px) !important;
+}
+
+/* زر التحديث */
+.refresh-btn { 
+    background: linear-gradient(135deg, #6B7280, #4B5563); 
+}
+
+.refresh-btn:hover { 
+    background: linear-gradient(135deg, #9CA3AF, #6B7280); 
+    transform: scale(1.05); /* نفس تأثير الـ hover */
+}
+
+.refresh-btn:active {
+    transform: scale(0.95) !important;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5) !important;
+    clip-path: inset(0 0 0 0 round 8px) !important;
+}
+
+/* زر الرجوع */
+.back-btn { 
+    background: linear-gradient(135deg, #8B0000, #B22222); 
+}
+
+.back-btn:hover { 
+    background: linear-gradient(135deg, #CD5C5C, #8B0000); 
+    transform: scale(1.05); /* نفس تأثير الـ hover */
+}
+
+.back-btn:active {
+    transform: scale(0.95) !important;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5) !important;
+    clip-path: inset(0 0 0 0 round 8px) !important;
+}
+
+/* زر المشتريات */
+.purchases-btn { 
+    background: linear-gradient(135deg, #4682B4, #20B2AA); 
+    position: relative; 
+}
+
+.purchases-btn:hover { 
+    background: linear-gradient(135deg, #20B2AA, #4682B4); 
+    transform: scale(1.05); /* نفس تأثير الـ hover */
+}
+
+.purchases-btn:active {
+    transform: scale(0.95) !important;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5) !important;
+    clip-path: inset(0 0 0 0 round 8px) !important;
+}
+
+.purchases-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #DC143C;
+    color: #fff;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.purchases-count.visible { 
+    display: flex; 
+}
+        .main-container {
+            max-width: 1400px;
+            margin: 10px auto;
+            padding: 0 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* حاوية الفلتر */
+       .filters {
+    width: 600px;
+    background: linear-gradient(135deg, rgba(26, 58, 71, 0.9), rgba(10, 21, 26, 0.9));
+    padding: 40px 40px; /* ارتفاع كبير */
+    min-height: 550px; /* ارتفاع أدنى */
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(0, 206, 209, 0.4);
+    border: 1px solid rgba(0, 206, 209, 0.5);
+    margin: 50px auto; /* تعديل الهوامش العلوية والسفلية إلى 50px */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* توسيط عمودي */
+    align-items: center; /* توسيط أفقي */
+    gap: 20px; /* المسافة بين القائمة ودائرة البحث */
+}
+
+        /* القائمة المنسدلة */
+        .custom-dropdown {
+            width: 500px; /* أقل من عرض حاوية الفلتر */
+            position: relative;
+            margin: 0 auto; /* توسيط */
+        }
+
+        .dropdown-selected {
+            padding: 12px 20px;
+            border-radius: 30px;
+            background: rgba(58, 96, 115, 0.1);
+            border: 2px solid #4A8296;
+            color: #e0e0e0;
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 0 15px rgba(0, 206, 209, 0.5);
+        }
+
+        .dropdown-selected:hover {
+            border-color: #FF1493;
+            box-shadow: 0 0 25px rgba(255, 20, 147, 0.7);
+        }
+
+        .dropdown-options {
+            position: absolute;
+            top: calc(100% + 20px); /* مسافة أنيقة من الأعلى */
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 20px;
+            border: 2px solid #4A8296;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+            display: none;
+            z-index: 3000;
+            max-height: 300px;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-options.active { display: block; }
+        .option {
+            padding: 12px 20px;
+            color: #e0e0e0;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            border-bottom: 1px solid rgba(0, 206, 209, 0.2);
+        }
+        .option:hover {
+            background: linear-gradient(45deg, #4A8296, #FF1493);
+            color: #fff;
+        }
+
+        /* دائرة البحث */
+        .search-orbit {
+            width: 300px; /* أصغر وأنيقة */
+            height: 300px;
+            border-radius: 50%;
+            border: 2px solid #4A8296;
+            background: rgba(58, 96, 115, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 30px rgba(0, 206, 209, 0.3);
+            animation: orbitPulse 4s infinite ease-in-out;
+            margin: 0 auto;
+        }
+
+        @keyframes orbitPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .search-orbit input {
+            width: 80%;
+            padding: 10px 15px;
+            border-radius: 25px;
+            background: rgba(22, 34, 42, 0.9);
+            border: 2px solid #4A8296;
+            color: #e0e0e0;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .search-orbit input:focus {
+            border-color: #FF1493;
+            box-shadow: 0 0 15px rgba(255, 20, 147, 0.5);
+        }
+
+       .search-orbit button {
+    padding: 10px 20px;
+    border-radius: 25px;
+    background: linear-gradient(45deg, #4A8296, #FF1493);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden !important;
+    clip-path: inset(0 0 0 0 round 25px) !important; /* نفس الـ border-radius */
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3); /* نفس الظل الخارجي */
+}
+
+.search-orbit button:hover {
+    background: linear-gradient(45deg, #FF1493, #4A8296);
+    transform: scale(1.05); /* نفس تأثير الـ hover */
+}
+
+.search-orbit button:active {
+    transform: scale(0.95) !important; /* نفس تأثير الضغط */
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5) !important; /* ظل داخلي */
+    clip-path: inset(0 0 0 0 round 25px) !important;
+}
+
+        /* شبكة المنتجات */
+        .products-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 600px; /* نفس عرض حاوية الفلتر */
+            margin: 0 auto;
+            display: none;
+        }
+
+        .products-grid.visible { display: flex; }
+
+        .product-card {
+            background: linear-gradient(135deg, rgba(26, 58, 71, 0.9), rgba(10, 21, 26, 0.9));
+            border-radius: 25px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 206, 209, 0.4);
+            transition: all 0.4s ease;
+        }
+
+        .product-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .product-card img {
+            width: 100%;
+            max-width: 220px;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border: 3px solid #4A8296;
+        }
+
+        .product-card h4 { font-size: 20px; color: #4A8296; margin: 10px 0; }
+        .product-card p { font-size: 14px; color: #e0e0e0; }
+        .product-card .price { font-size: 18px; color: #FF1493; font-weight: 700; margin: 10px 0; }
+       .product-card button {
+    padding: 12px 30px;
+    border-radius: 25px;
+    background: linear-gradient(45deg, #4A8296, #FF1493);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    position: relative;
+    overflow: hidden !important;
+    clip-path: inset(0 0 0 0 round 25px) !important; /* نفس الـ border-radius */
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3); /* نفس الظل الخارجي */
+}
+
+.product-card button:hover {
+    background: linear-gradient(45deg, #FF1493, #4A8296);
+    transform: scale(1.05); /* نفس تأثير الـ hover */
+}
+
+.product-card button:active {
+    transform: scale(0.95) !important; /* نفس تأثير الضغط */
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5) !important; /* ظل داخلي */
+    clip-path: inset(0 0 0 0 round 25px) !important;
+}
+        /* السلة */
+        .cart-drawer {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 40px 20px;
+            transition: right 0.4s ease;
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .cart-drawer.active { right: 0; }
+        .cart-drawer h3 { font-size: 26px; color: #4A8296; text-align: center; margin-bottom: 20px; }
+        .cart-items-container { max-height: 60vh; overflow-y: auto; }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .cart-item span { font-size: 14px; color: #e0e0e0; }
+        .cart-item button {
+            padding: 8px 15px;
+            border-radius: 20px;
+            background: linear-gradient(45deg, #FF1493, #FF69B4);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .cart-item button:hover { background: linear-gradient(45deg, #FF69B4, #FF1493); }
+        .cart-total-section { border-top: 2px dashed #4A8296; padding-top: 20px; text-align: center; }
+        .cart-total-section .total { font-size: 20px; color: #FF1493; font-weight: 700; }
+
+        /* زر الرجوع للأعلى */
+      .scroll-to-top {
+    position: fixed;
+    bottom: 50px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background: #8B0000;
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: none; /* مخفي افتراضيًا */
+}
+.scroll-to-top.visible { display: block; }
+.scroll-to-top:hover { background: #A00000; transform: translateY(-5px); }
+
+
+        /* الفوتر */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(90deg, rgba(0, 0, 0, 0.95), rgba(22, 34, 42, 0.9));
+            padding: 10px;
+            text-align: center;
+            z-index: 1000;
+              font-family: 'Cairo', sans-serif;
+            
+        }
+        footer p { font-size: 14px; color: #fff; }
+
+        /* رسالة SweetAlert */
+        .swal-custom-zindex { z-index: 4000 !important; }
+
+        /* التصميم المتجاوب */
+        @media (max-width: 768px) {
+            .filters { width: 90%; padding: 15px; }
+            .custom-dropdown { width: 100%; }
+            .dropdown-selected { padding: 10px 15px; font-size: 14px; }
+            .dropdown-options { top: calc(100% + 15px); }
+            .search-orbit { width: 250px; height: 250px; }
+            .search-orbit input { width: 85%; font-size: 12px; }
+            .search-orbit button { padding: 8px 15px; font-size: 12px; }
+            .products-grid { max-width: 90%; }
+            .product-card { padding: 15px; }
+            .product-card img { max-width: 180px; height: 180px; }
+            .cart-drawer { width: 300px; }
+        }
+
+        @media (max-width: 480px) {
+            .header-title { font-size: 16px; }
+            .header-btn { padding: 4px 8px; font-size: 10px; }
+            .filters { width: 95%; padding: 10px; }
+            .search-orbit { width: 200px; height: 200px; }
+            .search-orbit input { padding: 8px 10px; }
+            .search-orbit button { padding: 6px 12px; }
+            .products-grid { max-width: 95%; }
+            .product-card img { max-width: 150px; height: 150px; }
+            .product-card h4 { font-size: 16px; }
+            .product-card p { font-size: 12px; }
+            .product-card .price { font-size: 14px; }
+            .product-card button { padding: 10px 20px; }
+            .cart-drawer { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-title">متجر عسل</div>
+        <div class="header-buttons">
+            <button class="header-btn back-btn" onclick="window.location.href='index.html'">
+                <i class="fas fa-arrow-right"></i> رجوع
+            </button>
+            <button class="header-btn refresh-btn" onclick="refreshData()">
+                <i class="fas fa-sync-alt"></i> تحديث
+            </button>
+            <button class="header-btn purchases-btn" onclick="toggleCart()">
+                <i class="fas fa-shopping-cart"></i> المشتريات
+                <span class="purchases-count" id="cartCount">0</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="filters">
+            <div class="custom-dropdown">
+                <div class="dropdown-selected" onclick="toggleDropdown()">
+                    <span id="selectedCategory">اختر صنف</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                 <div class="dropdown-options" id="dropdownOptions">
+                <div class="option" data-value="all" onclick="selectOption('all', 'جميع الأدوات')">جميع الأدوات</div>
+                <div class="option" data-value="درنفيسات" onclick="selectOption('درنفيسات', 'درنفيسات')">درنفيسات</div>
+                <div class="option" data-value="درنفيس شحن" onclick="selectOption('درنفيس شحن', 'درنفيس شحن')">درنفيس شحن</div>
+                <div class="option" data-value="ملاقط" onclick="selectOption('ملاقط', 'ملاقط')">ملاقط</div>
+                <div class="option" data-value="شفرات" onclick="selectOption('شفرات', 'شفرات')">شفرات</div>
+                <div class="option" data-value="قوالع" onclick="selectOption('قوالع', 'قوالع')">قوالع</div>
+                <div class="option" data-value="قوالع ايفون" onclick="selectOption('قوالع ايفون', 'قوالع ايفون')">قوالع ايفون</div>
+                <div class="option" data-value="كتر ومقصات" onclick="selectOption('كتر ومقصات', 'كتر ومقصات')">كتر ومقصات</div>
+                <div class="option" data-value="امونيا" onclick="selectOption('امونيا', 'امونيا')">امونيا</div>
+                <div class="option" data-value="صمغ ولواصق" onclick="selectOption('صمغ ولواصق', 'صمغ ولواصق')">صمغ ولواصق</div>
+                <div class="option" data-value="اكسسوارات" onclick="selectOption('اكسسوارات', 'اكسسوارات')">اكسسوارات</div>
+                <div class="option" data-value="تبات كاوية" onclick="selectOption('تبات كاوية', 'تبات كاوية')">تبات كاوية</div>
+                <div class="option" data-value="سيم توصيل" onclick="selectOption('سيم توصيل', 'سيم توصيل')">سيم توصيل</div>
+                <div class="option" data-value="صولدر سيم" onclick="selectOption('صولدر سيم', 'صولدر سيم')">صولدر سيم</div>
+                <div class="option" data-value="صولدر سائل" onclick="selectOption('صولدر سائل', 'صولدر سائل')">صولدر سائل</div>
+                <div class="option" data-value="فلكس" onclick="selectOption('فلكس', 'فلكس')">فلكس</div>
+                <div class="option" data-value="كيبلات" onclick="selectOption('كيبلات', 'كيبلات')">كيبلات</div>
+                <div class="option" data-value="تيسترات" onclick="selectOption('تيسترات', 'تيسترات')">تيسترات</div>
+                <div class="option" data-value="هيدكانات" onclick="selectOption('هيدكانات', 'هيدكانات')">هيدكانات</div>
+                <div class="option" data-value="بور سبلاي" onclick="selectOption('بور سبلاي', 'بور سبلاي')">بور سبلاي</div>
+                <div class="option" data-value="كاويات" onclick="selectOption('كاويات', 'كاويات')">كاويات</div>
+                <div class="option" data-value="اوفوميتر" onclick="selectOption('اوفوميتر', 'اوفوميتر')">اوفوميتر</div>
+                <div class="option" data-value="مجهر" onclick="selectOption('مجهر', 'مجهر')">مجهر</div>
+                <div class="option" data-value="يدات" onclick="selectOption('يدات', 'يدات')">يدات</div>
+                <div class="option" data-value="منوع" onclick="selectOption('منوع', 'منوع')">منوع</div>
+            </div>
+    </div>
+    
+            <div class="search-orbit">
+                <input type="text" id="searchInput" placeholder="ابحث عن الأدوات">
+                <button onclick="searchProducts()"><i class="fas fa-search"></i> بحث</button>
+            </div>
+        </div>
+
+       <div class="products-grid" id="productsGrid">
+            <!-- درنفيسات -->
+           
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/shafra wa darnfes.png" alt="(3 في 1) شفرة + درنفيس + قالعة">
+    <h4>(3 في 1) شفرة + درنفيس + قالعة</h4>
+    <p>أداة مبتكرة 3 في 1! شفرة حادة، درنفيس متعدد الاستخدامات، وقالعة احترافية تساعدك في فك وتركيب الأجهزة بسهولة وسرعة دون إتلاف القطع الحساسة.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('(3 في 1) شفرة + درنفيس + قالعة', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/darnfes wa qal3a.png" alt="(2 في 1) درنفيس + قالعة">
+    <h4>(2 في 1) درنفيس + قالعة</h4>
+    <p>توفير في الأدوات، كفاءة في العمل! درنفيس عالي الدقة مع قالعة مدمجة لإجراء عمليات الفتح والإصلاح بسلاسة واحترافية.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('(2 في 1) درنفيس + قالعة', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/darnfes 5 psc.png" alt="سيت درنفيس لكل الأجهزة">
+    <h4>سيت درنفيس لكل الأجهزة</h4>
+    <p>مجموعة درنفيس احترافية تناسب جميع الأجهزة، مصنوعة من مواد متينة لضمان الاستخدام الطويل والعملي لأي فني صيانة!</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('سيت درنفيس لكل الأجهزة', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/222.png" alt="سيت درنفيس جوكر">
+    <h4>سيت درنفيس جوكر</h4>
+    <p>درنفيس جوكر بجودة عالية! مجموعة متعددة الاستخدام تناسب أغلب الأجهزة الإلكترونية وتساعدك في إنجاز أعمال الصيانة بسهولة وسرعة.</p>
+    <div class="price">١٣,٠٠٠ د.ع</div>
+    <button onclick="addToCart('سيت درنفيس جوكر', 13000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/screw rf4.png" alt="درنفيس اصلي RELIFE">
+    <h4>درنفيس اصلي RELIFE</h4>
+    <p>درنفيس عالي الجودة من RELIFE، مصمم بدقة فائقة ليساعدك على فك وتركيب الأجهزة بسهولة ودون أي ضرر على المكونات!</p>
+    <div class="price">٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('درنفيس اصلي RELIFE', 9000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/screw br.png" alt="درنفيس من شركة (B&R)">
+    <h4>درنفيس من شركة (B&R)</h4>
+    <p>احصل على درنفيس احترافي من شركة (B&R)، بتصميم أنيق ومريح يمنحك دقة في فك وتركيب الأجهزة بسهولة. جودة تصنيع عالية ليدوم طويلاً!</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('درنفيس من شركة (B&R)', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/scre br mid.png" alt="درنفيس سامسونك من شركة (B&R)">
+    <h4>درنفيس سامسونك من شركة (B&R)</h4>
+    <p>درنفيس سامسونج أصلي من شركة (B&R)، مصمم خصيصًا لفك براغي أجهزة سامسونج بسهولة وسرعة دون تلف البراغي.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('درنفيس سامسونك من شركة (B&R)', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/set screw prof.png" alt="عدة احترافية متكاملة من شركة (SUNSHINE)">
+    <h4>عدة احترافية متكاملة من شركة (SUNSHINE)</h4>
+    <p>عدة صيانة احترافية من (SUNSHINE)، تحتوي على أدوات دقيقة ومتينة لتناسب جميع أنواع الصيانة.</p>
+    <div class="price">٢٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('عدة احترافية متكاملة من شركة (SUNSHINE)', 24000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/set screw blastic.png" alt="عدة درنفيس من شركة (YAXUN)">
+    <h4>عدة درنفيس من شركة (YAXUN)</h4>
+    <p>مجموعة درنفيس متكاملة من (YAXUN)، مصممة لفتح جميع أنواع الأجهزة الإلكترونية بسهولة.</p>
+    <div class="price">١٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('عدة درنفيس من شركة (YAXUN)', 14000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/screw sre.png" alt="عدة صيانة متكاملة اصلية">
+    <h4>عدة صيانة متكاملة اصلية</h4>
+    <p>عدة متكاملة تحتوي على الأدوات الأساسية التي يحتاجها كل فني صيانة محترف، بجودة تصنيع عالية.</p>
+    <div class="price">٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('عدة صيانة متكاملة اصلية', 9000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/scre sam.png" alt="درنفيس اصلي سامسونك SUNSHINE">
+    <h4>درنفيس اصلي سامسونك SUNSHINE</h4>
+    <p>درنفيس أصلي مخصص لأجهزة سامسونج، يساعدك على فك وتركيب الأجهزة بسهولة وأمان.</p>
+    <div class="price">٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('درنفيس اصلي سامسونك SUNSHINE', 9000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/oda prof.png" alt="عدة متكاملة YAXUN">
+    <h4>عدة متكاملة YAXUN</h4>
+    <p>مجموعة أدوات متكاملة من (YAXUN)، تحتوي على كل ما تحتاجه لفتح وصيانة الأجهزة الإلكترونية بجودة عالية وسهولة في الاستخدام.</p>
+    <div class="price">١٢,٠٠٠ د.ع</div>
+    <button onclick="addToCart('عدة متكاملة YAXUN', 12000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/oda pastic2.png" alt="عدة صيانة متكاملة">
+    <h4>عدة صيانة متكاملة</h4>
+    <p>مجموعة صيانة تضم الأدوات الأساسية لكل فني، مصممة لتوفير راحة وكفاءة أثناء العمل.</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('عدة صيانة متكاملة', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/oda 2.png" alt="عدة صيانة متكاملة">
+    <h4>عدة صيانة متكاملة</h4>
+    <p>عدة صيانة عملية تحتوي على الأدوات الأساسية التي يحتاجها كل فني صيانة، مصنوعة من مواد عالية الجودة لسهولة ودقة العمل.</p>
+    <div class="price">٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('عدة صيانة متكاملة', 9000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/drnfes.png" alt="درنفيس ايفون خارجي (0.8) RELIFE">
+    <h4>درنفيس ايفون خارجي (0.8) RELIFE</h4>
+    <p>درنفيس خارجي احترافي من RELIFE مخصص لصيانة أجهزة الآيفون.</p>
+    <div class="price">٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('درنفيس ايفون خارجي (0.8) RELIFE', 9000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/drnfes sam.png" alt="درنفيس سامسونك اصلي">
+    <h4>درنفيس سامسونك اصلي</h4>
+    <p>درنفيس أصلي بجودة عالية مصمم خصيصاً لصيانة أجهزة سامسونج.</p>
+    <div class="price">٨,٠٠٠ د.ع</div>
+    <button onclick="addToCart('درنفيس سامسونك اصلي', 8000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/drnfes mech.png" alt="درنفيس ميكانيك">
+    <h4>درنفيس ميكانيك</h4>
+    <p>درنفيس بجودة تصنيع عالية يضمن قبضة مريحة وأداء مثالي.</p>
+    <div class="price">٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('درنفيس ميكانيك', 9000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/drnfes relf.png" alt="درنفيس RELIFE عالي الجودة">
+    <h4>درنفيس RELIFE عالي الجودة</h4>
+    <p>درنفيس احترافي من شركة RELIFE بتصميم مريح يمنحك دقة وثباتًا أثناء العمل. مثالي لفنيي الصيانة والميكانيك.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('درنفيس RELIFE عالي الجودة', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/drnfes kgx.png" alt="درنفيس أصلي عالي الجودة">
+    <h4>درنفيس أصلي عالي الجودة</h4>
+    <p>درنفيس متين بمقبض مريح يوفر لك تحكمًا دقيقًا وسهولة في الاستخدام. مثالي لجميع أعمال الصيانة والميكانيك.</p>
+    <div class="price">٨,٠٠٠ د.ع</div>
+    <button onclick="addToCart('درنفيس أصلي عالي الجودة', 8000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/drnfes 2ull.png" alt="درنفيس أصلي من شركة 2UUL">
+    <h4>درنفيس أصلي من شركة 2UUL</h4>
+    <p>درنفيس احترافي من شركة 2UUL، تصميم مريح وقوة تحمل عالية، مثالي للاستخدام في أعمال الصيانة الدقيقة.</p>
+    <div class="price">٨,٠٠٠ د.ع</div>
+    <button onclick="addToCart('درنفيس أصلي من شركة 2UUL', 8000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/set drnfes.png" alt="سيت درنفيس لكل الأجهزة">
+    <h4>سيت درنفيس لكل الأجهزة</h4>
+    <p>مجموعة درنفيس احترافية تناسب جميع الأجهزة، مصنوعة من مواد متينة لضمان الاستخدام الطويل والعملي لأي فني صيانة.</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('سيت درنفيس لكل الأجهزة', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/set drnfes other.png" alt="سيت درنفيس احترافي">
+    <h4>سيت درنفيس احترافي</h4>
+    <p>سيت درنفيس بجودة عالية جدًا، مثالي لفنيي الصيانة، يوفر دقة وسهولة في العمل.</p>
+    <div class="price">٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('سيت درنفيس احترافي', 9000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيسات">
+    <img src="images/drnfes maant.png" alt="درنفيس سامسونك اصلي">
+    <h4>درنفيس سامسونك اصلي</h4>
+    <p>درنفيس سامسونك بجودة عالية من شركة (MaAnt) العالمية، مثالي لفنيي الصيانة ودقيق في العمل.</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('درنفيس سامسونك اصلي', 7000)">أضف إلى السلة</button>
+</div>
+
+            <!-- درنفيس شحن -->
+
+<div class="product-card" data-category="درنفيس شحن">
+    <img src="images/scre charg1.png" alt="درنفيس شحن من شركة (SUNSHINE)">
+    <h4>درنفيس شحن من شركة (SUNSHINE)</h4>
+    <p>درنفيس شحن احترافي من (SUNSHINE)، بتصميم مريح وأناقة مثالية، مزود ببطارية كبيرة تدوم طويلاً ليمنحك تجربة صيانة بدون توقف.</p>
+    <div class="price">٥٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('درنفيس شحن من شركة (SUNSHINE)', 54000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيس شحن">
+    <img src="images/scre charg2.png" alt="درنفيس شحن من شركة (YAXUN)">
+    <h4>درنفيس شحن من شركة (YAXUN)</h4>
+    <p>درنفيس شحن مميز من (YAXUN)، ببطارية تدوم طويلاً وتصميم عملي للغاية يجعله أداة لا غنى عنها في مجال الصيانة.</p>
+    <div class="price">٣٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('درنفيس شحن من شركة (YAXUN)', 39000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيس شحن">
+    <img src="images/scre charg3.png" alt="درنفيس شحن من شركة YAXUN">
+    <h4>درنفيس شحن من شركة YAXUN</h4>
+    <p>درنفيس شحن بجودة فائقة من (YAXUN)، بطارية قوية وأداء مذهل يجعله خيارًا مثاليًا لفنيي الصيانة.</p>
+    <div class="price">٤٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('درنفيس شحن من شركة YAXUN', 49000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيس شحن">
+    <img src="images/scrw charg8.png" alt="درنفيس شحن احترافي">
+    <h4>درنفيس شحن احترافي</h4>
+    <p>🔹 درنفيس شحن بجودة عالية، تصميم أنيق، وبطارية تدوم طويلاً. مثالي لفنيي الصيانة!</p>
+    <div class="price">٣٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('درنفيس شحن احترافي', 39000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="درنفيس شحن">
+    <img src="images/drnfese.png" alt="درنفيس الكهربائي">
+    <h4>درنفيس الكهربائي</h4>
+    <p>درنفيس كهربائي أصلي، عملي وسهل الاستخدام، يوفر كفاءة عالية للصيانة.</p>
+    <div class="price">٢٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('درنفيس الكهربائي', 24000)">أضف إلى السلة</button>
+</div>
+            <!-- ملاقط -->
+
+<div class="product-card" data-category="ملاقط">
+    <img src="images/melqat ic.png" alt="ملقط ايسي من شركة ميكانك">
+    <h4>ملقط ايسي من شركة ميكانك</h4>
+    <p>ملقط آيسي احترافي من شركة (ميكانيك)، بتصميم دقيق ومضاد للانزلاق، مثالي للتعامل مع المكونات الدقيقة أثناء عمليات الإصلاح.</p>
+    <div class="price">٨,٠٠٠ د.ع</div>
+    <button onclick="addToCart('ملقط ايسي من شركة ميكانك', 8000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="ملاقط">
+    <img src="images/melqat ic2.png" alt="ملقط ايسي من شركة (RELIFE)">
+    <h4>ملقط ايسي من شركة (RELIFE)</h4>
+    <p>ملقط احترافي بدقة عالية من شركة (RELIFE)، مثالي للتعامل مع الآيسيات الصغيرة والتقاطها بسهولة أثناء الصيانة.</p>
+    <div class="price">١٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('ملقط ايسي من شركة (RELIFE)', 14000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="ملاقط">
+    <img src="images/melqt.png" alt="ملقط IFIXES">
+    <h4>ملقط IFIXES</h4>
+    <p>ملقط دقيق من (IFIXES)، مثالي لمسك القطع الإلكترونية الصغيرة أثناء الصيانة، يتميز بقبضة مريحة ودقة عالية.</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('ملقط IFIXES', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="ملاقط">
+    <img src="images/melqat.png" alt="ملقط عدل YAXUN">
+    <h4>ملقط عدل YAXUN</h4>
+    <p>ملقط دقيق وعالي الجودة من YAXUN، يساعد في التعامل مع القطع الصغيرة بسهولة.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('ملقط عدل YAXUN', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="ملاقط">
+    <img src="images/melqat22.png" alt="ملقط صيانة عدل ومعكوف">
+    <h4>ملقط صيانة عدل ومعكوف</h4>
+    <p>ملقط احترافي بمقاسين (عدل ومعكوف) يضمن دقة في الإمساك بالمكونات الصغيرة.</p>
+    <div class="price">٨,٠٠٠ د.ع</div>
+    <button onclick="addToCart('ملقط صيانة عدل ومعكوف', 8000)">أضف إلى السلة</button>
+</div>
+
+
+
+            <!-- شفرات -->
+
+<div class="product-card" data-category="شفرات">
+    <img src="images/shafrat.png" alt="سيت شفرة متعدد الاستخدام">
+    <h4>سيت شفرة متعدد الاستخدام</h4>
+    <p>مجموعة شفرات متعددة الاستخدام، مثالية لرفع الگلاس وإجراء عمليات الصيانة الدقيقة بسهولة ودقة عالية. تصميم مريح يمنحك تحكمًا أفضل!</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('سيت شفرة متعدد الاستخدام', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="شفرات">
+    <img src="images/shfraat.png" alt="شفرات صيانة متعددة الاستخدامات">
+    <h4>شفرات صيانة متعددة الاستخدامات</h4>
+    <p>مجموعة شفرات عملية لفتح الأجهزة وإزالة اللواصق، مصنوعة من مواد متينة تدوم طويلاً.</p>
+    <div class="price">١٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('شفرات صيانة متعددة الاستخدامات', 14000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="شفرات">
+    <img src="images/set shfraat red.png" alt="سيت شفرات احترافي متعدد الاشكال">
+    <h4>سيت شفرات احترافي متعدد الاشكال</h4>
+    <p>مجموعة شفرات احترافية بمقاسات وأشكال متنوعة لتناسب جميع الاستخدامات.</p>
+    <div class="price">١٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('سيت شفرات احترافي متعدد الاشكال', 15000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="شفرات">
+    <img src="images/shafraa.png" alt="سيت شفرات متعدد الاشكال">
+    <h4>سيت شفرات متعدد الاشكال</h4>
+    <p>سيت شفرات بجودة ممتازة لتنفيذ أعمال الصيانة الدقيقة بسهولة.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('سيت شفرات متعدد الاشكال', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="شفرات">
+    <img src="images/set sfraaat 5pc.png" alt="شفرة حادة مع 5 رؤوس احتياط">
+    <h4>شفرة حادة مع 5 رؤوس احتياط</h4>
+    <p>شفرة حادة بجودة عالية توفر دقة مثالية في القطع، تأتي مع 5 رؤوس احتياطية لضمان استخدام طويل الأمد وسهولة في الاستبدال.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('شفرة حادة مع 5 رؤوس احتياط', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="شفرات">
+    <img src="images/shfraat neo.png" alt="سيت شفرات متعدد الأشكال">
+    <h4>سيت شفرات متعدد الأشكال</h4>
+    <p>سيت شفرات احترافي متعدد الأشكال، مصنوع من مواد عالية الجودة ليمنحك دقة واحترافية في العمل. مناسب لفتح الأجهزة الإلكترونية بسهولة وأمان.</p>
+    <div class="price">٨,٠٠٠ د.ع</div>
+    <button onclick="addToCart('سيت شفرات متعدد الأشكال', 8000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="شفرات">
+    <img src="images/set shfraat.png" alt="سيت شفرة بشفرات منوعة (20) قطعة">
+    <h4>سيت شفرة بشفرات منوعة (20) قطعة</h4>
+    <p>مجموعة شفرات متعددة الاستخدام، تحتوي على 20 قطعة بأنواع مختلفة، مثالية لأعمال الصيانة الدقيقة وتوفير تحكم دقيق وسهل.</p>
+    <div class="price">٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('سيت شفرة بشفرات منوعة (20) قطعة', 9000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="شفرات">
+    <img src="images/set shfraaaaat prof.png" alt="سيت شفرات احترافي 30 قطعة">
+    <h4>سيت شفرات احترافي 30 قطعة</h4>
+    <p>مجموعة شفرات احترافية مكونة من 30 قطعة، متعددة الاستخدامات لعمليات الصيانة الدقيقة، مصنوعة من مواد عالية الجودة لضمان دقة وتحكم مثالي.</p>
+    <div class="price">١٨,٠٠٠ د.ع</div>
+    <button onclick="addToCart('سيت شفرات احترافي 30 قطعة', 18000)">أضف إلى السلة</button>
+</div>
+
+
+            <!-- قوالع -->
+
+<div class="product-card" data-category="قوالع">
+    <img src="images/qal3a akhder blastic.png" alt="فتاحة بلاستك (10) قطع من شركة (SUNSHINE)">
+    <h4>فتاحة بلاستك (10) قطع من شركة (SUNSHINE)</h4>
+    <p>مجموعة فتاحات بلاستيك عملية مكونة من 10 قطع من شركة (SUNSHINE)، ضرورية لفك الأجهزة الحساسة دون إحداث خدوش أو أضرار على الشاشة.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('فتاحة بلاستك (10) قطع من شركة (SUNSHINE)', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="قوالع">
+    <img src="images/ql3a slim.png" alt="قالعة سلم من شركة (YAXUN)">
+    <h4>قالعة سلم من شركة (YAXUN)</h4>
+    <p>قالعة سلم احترافية من (YAXUN)، تمنحك سهولة في رفع وإزالة الشاشات دون ضرر، بمرونة عالية تناسب جميع أنواع الأجهزة!</p>
+    <div class="price">٣,٠٠٠ د.ع</div>
+    <button onclick="addToCart('قالعة سلم من شركة (YAXUN)', 3000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="قوالع">
+    <img src="images/ftaha rasen.png" alt="فتاحة راسين ستيل وبلاستك">
+    <h4>فتاحة راسين ستيل وبلاستك</h4>
+    <p>فتاحة احترافية برأسين من الستيل والبلاستيك، تمنحك القدرة على فتح الأجهزة بسهولة دون الإضرار بالأجزاء الداخلية. أداة أساسية لفنيي الصيانة!</p>
+    <div class="price">٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('فتاحة راسين ستيل وبلاستك', 4000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="قوالع">
+    <img src="images/qal3a steel.png" alt="قالعة ستيل (3) قطع من شركة (RELIFE)">
+    <h4>قالعة ستيل (3) قطع من شركة (RELIFE)</h4>
+    <p>مجموعة قالعات ستيل (3) قطع من (RELIFE)، بتصميم قوي ومتين يساعدك في رفع وإزالة الشاشات بسهولة وأمان، مع مرونة فائقة تناسب مختلف الأجهزة.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('قالعة ستيل (3) قطع من شركة (RELIFE)', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="قوالع">
+    <img src="images/ste qal3a.png" alt="سيت قالعات سلم مرنة ثلاثة في واحد">
+    <h4>سيت قالعات سلم مرنة ثلاثة في واحد</h4>
+    <p>مجموعة قالعات سلم مرنة، توفر لك سهولة في إزالة الشاشات والزجاج دون التسبب بأي ضرر.</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('سيت قالعات سلم مرنة ثلاثة في واحد', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="قوالع">
+    <img src="images/qal3a iphone.png" alt="قالعة شاشات الايفون ميكانيك">
+    <h4>قالعة شاشات الايفون ميكانيك</h4>
+    <p>قالعة شاشات مصممة خصيصًا لإزالة شاشات الآيفون بسهولة ودون أي تلف للجهاز، بجودة ميكانيك العالية.</p>
+    <div class="price">٤٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('قالعة شاشات الايفون ميكانيك', 44000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="قوالع">
+    <img src="images/set shfraaat.png" alt="سيت شفرات عريضة 2UUL">
+    <h4>سيت شفرات عريضة 2UUL</h4>
+    <p>مجموعة شفرات عريضة مخصصة لرفع شاشات الآيفون بسهولة ودقة، مصنوعة من مواد متينة تمنحك استخدامًا طويل الأمد دون تلف.</p>
+    <div class="price">٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('سيت شفرات عريضة 2UUL', 9000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="قوالع">
+    <img src="images/qal3a yellow.png" alt="سيت قالعة ستيل درجة أولى">
+    <h4>سيت قالعة ستيل درجة أولى</h4>
+    <p>مجموعة قوالع ستيل بجودة ممتازة، مصممة لرفع وإزالة شاشات الهواتف بسهولة وأمان دون الإضرار بالمكونات الداخلية.</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('سيت قالعة ستيل درجة أولى', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="قوالع">
+    <img src="images/qal3a blue.png" alt="شفرة ستيل RELIFE">
+    <h4>شفرة ستيل RELIFE</h4>
+    <p>شفرة ستيل من (RELIFE) بجودة فائقة، مثالية للقطع الدقيق وإزالة المواد اللاصقة أثناء الصيانة.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('شفرة ستيل RELIFE', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="قوالع">
+    <img src="images/qal3a slim.png" alt="قالعة مرنة اصلية">
+    <h4>قالعة مرنة اصلية</h4>
+    <p>أداة مرنة لإزالة الشاشات دون إلحاق الضرر بالمكونات الداخلية.</p>
+    <div class="price">٣,٠٠٠ د.ع</div>
+    <button onclick="addToCart('قالعة مرنة اصلية', 3000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="قوالع">
+    <img src="images/qal3a merna.png" alt="قالعة شاشات بلاستك مرنة">
+    <h4>قالعة شاشات بلاستك مرنة</h4>
+    <p>قالعة مرنة مصنوعة من البلاستيك، تحمي الشاشة من الكسر أثناء الإزالة.</p>
+    <div class="price">٣,٠٠٠ د.ع</div>
+    <button onclick="addToCart('قالعة شاشات بلاستك مرنة', 3000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="قوالع">
+    <img src="images/qal3a qbtha.png" alt="قالعة شاشات حديد قبضة">
+    <h4>قالعة شاشات حديد قبضة</h4>
+    <p>قالعة معدنية قوية بقبضة مريحة، مصممة لإزالة الشاشات بسهولة.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('قالعة شاشات حديد قبضة', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="قوالع">
+    <img src="images/set qal3a.png" alt="سيت قالعة شاشات">
+    <h4>سيت قالعة شاشات</h4>
+    <p>مجموعة أدوات متكاملة لإزالة شاشات الهواتف بأمان وسهولة.</p>
+    <div class="price">ٵ,٠٠٠ د.ع</div>
+    <button onclick="addToCart('سيت قالعة شاشات', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="قوالع">
+    <img src="images/ftaha blastic.png" alt="فتاحة بلاستك (10) قطع من شركة (SUNSHINE)">
+    <h4>فتاحة بلاستك (10) قطع من شركة (SUNSHINE)</h4>
+    <p>مجموعة فتاحات بلاستك احترافية (10) قطع من شركة SUNSHINE، مثالية لفتح الأجهزة الإلكترونية بسهولة وأمان.</p>
+    <div class="price">٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('فتاحة بلاستك (10) قطع من شركة (SUNSHINE)', 4000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="قوالع">
+    <img src="images/set qal3a neo.png" alt="سيت قالعات فتح متنوع">
+    <h4>سيت قالعات فتح متنوع</h4>
+    <p>مجموعة قالعات متعددة الاستخدامات، مصممة لفتح الأجهزة الإلكترونية بسهولة وأمان دون إتلاف الأجزاء الحساسة، مثالية لفنيي الصيانة.</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('سيت قالعات فتح متنوع', 7000)">أضف إلى السلة</button>
+</div>
+
+
+            <!-- قوالع ايفون -->
+
+<div class="product-card" data-category="قوالع ايفون">
+    <img src="images/qal3a shfat.png" alt="قالعة ايفون بلاستك">
+    <h4>قالعة ايفون بلاستك</h4>
+    <p>قالعة آيفون بلاستيك بجودة عالية، مثالية لرفع الشاشات وإجراء عمليات الصيانة بدون إتلاف المكونات الداخلية. ضرورية لكل فني صيانة!</p>
+    <div class="price">٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('قالعة ايفون بلاستك', 4000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="قوالع ايفون">
+    <img src="images/ql3a iphone.png" alt="قالعة شاشات الايفون ميكانيك">
+    <h4>قالعة شاشات الايفون ميكانيك</h4>
+    <p>قالعة شاشات أصلية من شركة ميكانيك بجودة عالية، مثالية لفك شاشات الآيفون بسهولة وأمان.</p>
+    <div class="price">٤٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('قالعة شاشات الايفون ميكانيك', 44000)">أضف إلى السلة</button>
+</div>
+
+            <!-- كتر ومقصات -->
+      
+<div class="product-card" data-category="كتر ومقصات">
+    <img src="images/maqas.png" alt="مقص صيانة جديد">
+    <h4>مقص صيانة جديد</h4>
+    <p>مقص دقيق ومتين، مثالي لقص الأسلاك والمواد اللاصقة بسهولة وأمان.</p>
+    <div class="price">٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('مقص صيانة جديد', 4000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="كتر ومقصات">
+    <img src="images/katar.png" alt="كتر صيانة اصلي">
+    <h4>كتر صيانة اصلي</h4>
+    <p>كتر صيانة احترافي يستخدم لقص الأسلاك والمواد الدقيقة.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('كتر صيانة اصلي', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="كتر ومقصات">
+    <img src="images/maqas2222.png" alt="مقص صغير قوي">
+    <h4>مقص صغير قوي</h4>
+    <p>مقص صغير بجودة عالية، يتميز بشفرات حادة ودقيقة لقص الأسلاك والمواد الدقيقة بسهولة وسلاسة. مثالي لفنيي الصيانة وأعمال الدقة.</p>
+    <div class="price">٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('مقص صغير قوي', 4000)">أضف إلى السلة</button>
+</div>
+
+            <!-- امونيا -->
+
+<div class="product-card" data-category="امونيا">
+    <img src="images/falcon530.png" alt="بخاخ تنظيف (530)">
+    <h4>بخاخ تنظيف (530)</h4>
+    <p>بخاخ تنظيف فعال لإزالة الأوساخ والأتربة من الأجهزة الإلكترونية.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('بخاخ تنظيف (530)', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="امونيا">
+    <img src="images/amonia.png" alt="محلول امونيا اصلي درجة اولى">
+    <h4>محلول امونيا اصلي درجة اولى</h4>
+    <p>محلول امونيا أصلي بجودة عالية، مثالي لأعمال التنظيف والصيانة، مع تعبئة إضافية ليدوم لفترة أطول.</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('محلول امونيا اصلي درجة اولى', 7000)">أضف إلى السلة</button>
+</div>
+            <!-- صمغ ولواصق -->
+            
+            
+
+<div class="product-card" data-category="صمغ ولواصق">
+    <img src="images/lasiq temp.png" alt="لاصق حراري">
+    <h4>لاصق حراري</h4>
+    <p>لاصق حراري متين يمنحك تثبيتًا قويًا للأجزاء الإلكترونية، يحمي المكونات من درجات الحرارة العالية أثناء عمليات الإصلاح!</p>
+    <div class="price">٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('لاصق حراري', 4000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صمغ ولواصق">
+    <img src="images/lassiq wejaean.png" alt="لاصق وجهين">
+    <h4>لاصق وجهين</h4>
+    <p>لاصق قوي بوجهين، مثالي لعمليات الإصلاح والتجميع، يوفر لك تثبيتًا محكمًا للأجزاء الإلكترونية دون الحاجة إلى لحام!</p>
+    <div class="price">٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('لاصق وجهين', 4000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صمغ ولواصق">
+    <img src="images/lasiq temp2.png" alt="لاصق حراري">
+    <h4>لاصق حراري</h4>
+    <p>لاصق حراري بجودة عالية، يحمي المكونات الإلكترونية من الحرارة أثناء عمليات الصيانة والإصلاح.</p>
+    <div class="price">٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('لاصق حراري', 4000)">أضف إلى السلة</button>
+</div>
+            
+
+
+            <div class="product-card" data-category="صمغ ولواصق">
+    <img src="images/glue 50ml.png" alt="عصارة صمغ شفاف (50 مل) MCN">
+    <h4>عصارة صمغ شفاف (50 مل) MCN</h4>
+    <p>صمغ شفاف أصلي من (MCN)، يمنح التصاقًا قويًا وسريع الجفاف، مثالي لإعادة تجميع الشاشات والقطع الإلكترونية.</p>
+    <div class="price">٣,٠٠٠ د.ع</div>
+    <button onclick="addToCart('عصارة صمغ شفاف (50 مل) MCN', 3000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صمغ ولواصق">
+    <img src="images/glue 110ml.png" alt="عصارة صمغ شفاف (110 مل) MCN">
+    <h4>عصارة صمغ شفاف (110 مل) MCN</h4>
+    <p>عصارة صمغ شفاف بسعة أكبر (110 مل) توفر تغطية واسعة وثباتًا عاليًا، مصممة لصيانة الأجهزة الإلكترونية والشاشات.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('عصارة صمغ شفاف (110 مل) MCN', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صمغ ولواصق">
+    <img src="images/glue black.png" alt="صمغ اسود كوالتي عالي">
+    <h4>صمغ اسود كوالتي عالي</h4>
+    <p>صمغ أسود بجودة عالية، يتميز بقوة التصاق مثالية، مقاوم للحرارة والرطوبة، مناسب لإصلاح الشاشات والمكونات الإلكترونية.</p>
+    <div class="price">٣,٠٠٠ د.ع</div>
+    <button onclick="addToCart('صمغ اسود كوالتي عالي', 3000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صمغ ولواصق">
+    <img src="images/flycdi gule 50ml.png" alt="صمغ موبايل FLYCDI 50 مل">
+    <h4>صمغ موبايل FLYCDI 50 مل</h4>
+    <p>صمغ موبايل احترافي من شركة FLYCDI العالمية، بسعة 50 مل، اسود وشفاف يوفر قوة التصاق عالية وثبات مثالي للأجهزة الإلكترونية.</p>
+    <div class="price">٣,٠٠٠ د.ع</div>
+    <button onclick="addToCart('صمغ موبايل FLYCDI 50 مل', 3000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صمغ ولواصق">
+    <img src="images/flycd glue 110ml.png" alt="صمغ موبايل FLYCDI 110 مل">
+    <h4>صمغ موبايل FLYCDI 110 مل</h4>
+    <p>صمغ موبايل بجودة عالية من شركة FLYCDI، بسعة 110 مل، اسود وشفاف مثالي للإصلاحات الدقيقة ويوفر قوة التصاق فائقة للمكونات الإلكترونية.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('صمغ موبايل FLYCDI 110 مل', 5000)">أضف إلى السلة</button>
+</div>
+            <!-- اكسسوارات -->
+            <div class="product-card" data-category="اكسسوارات">
+    <img src="images/bada.png" alt="بادة صيانة حرارية">
+    <h4>بادة صيانة حرارية</h4>
+    <p>احمِ سطح العمل الخاص بك مع بادة الصيانة الحرارية، مصنوعة من مواد عالية الجودة تتحمل درجات الحرارة العالية وتمنحك بيئة عمل مثالية. ضرورية لكل فني صيانة!</p>
+    <div class="price">١٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('بادة صيانة حرارية', 14000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="اكسسوارات">
+    <img src="images/mejraat orange.png" alt="مجرات تنظيمية مفيدة">
+    <h4>مجرات تنظيمية مفيدة</h4>
+    <p>نظم مكان عملك مع هذه المجرات العملية! توفر لك ترتيبًا مثاليًا لأدواتك مع تصميم أنيق يجعل عملك أكثر راحة وكفاءة.</p>
+    <div class="price">٢٣,٠٠٠ د.ع</div>
+    <button onclick="addToCart('مجرات تنظيمية مفيدة', 23000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="اكسسوارات">
+    <img src="images/stand.png" alt="ستاند درنفيس">
+    <h4>ستاند درنفيس</h4>
+    <p>ستاند درنفيس أنيق وعالي الجودة، يساعدك في تنظيم أدوات الصيانة بسهولة، مثالي لفنيي الهواتف والصيانة.</p>
+    <div class="price">١٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('ستاند درنفيس', 19000)">أضف إلى السلة</button>
+</div>
+
+
+
+            <!-- تبات كاوية -->
+            <div class="product-card" data-category="تبات كاوية">
+    <img src="images/tip sunshine.png" alt="تب كاوية من شركة (SUNSHINE)">
+    <h4>تب كاوية من شركة (SUNSHINE)</h4>
+    <p>تب كاوية أصلي من شركة (SUNSHINE) يضمن لك لحامًا دقيقًا واحترافيًا مع تحكم مثالي في درجة الحرارة، مما يجعل عمليات الإصلاح أكثر سلاسة!</p>
+    <div class="price">٨,٠٠٠ د.ع</div>
+    <button onclick="addToCart('تب كاوية من شركة (SUNSHINE)', 8000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="تبات كاوية">
+    <img src="images/hegri tip.png" alt="تب كاوية من شركة (YAXUN)">
+    <h4>تب كاوية من شركة (YAXUN)</h4>
+    <p>تب كاوية حجري أصلي من (YAXUN)، يمنحك أداءً عاليًا وعمرًا طويلًا، مثالي لفنيي الصيانة الذين يبحثون عن دقة وجودة عالية!</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('تب كاوية من شركة (YAXUN)', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="تبات كاوية">
+    <img src="images/tip c210.png" alt="تب كاوية JBC موديل C210">
+    <h4>تب كاوية JBC موديل C210</h4>
+    <p>تب كاوية احترافية موديل C210 من JBC، توفر حرارة مستقرة وأداء عالي يناسب أعمال اللحام الدقيقة.</p>
+    <div class="price">١٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('تب كاوية JBC موديل C210', 15000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="تبات كاوية">
+    <img src="images/tip br.png" alt="تب كاوية من شركة (B&R)">
+    <h4>تب كاوية من شركة (B&R)</h4>
+    <p>تب كاوية أصلي من (B&R)، بتصميم احترافي يمنحك تجربة لحام سلسة وعالية الجودة.</p>
+    <div class="price">٨,٠٠٠ د.ع</div>
+    <button onclick="addToCart('تب كاوية من شركة (B&R)', 8000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="تبات كاوية">
+    <img src="images/tip t12.png" alt="تب كاوية T12 MECHANIC">
+    <h4>تب كاوية T12 MECHANIC</h4>
+    <p>تب كاوية T12 الأصلي من (MECHANIC)، يوفر حرارة دقيقة وثابتة، مثالي لجميع أنواع اللحام.</p>
+    <div class="price">١٠,٠٠٠ د.ع</div>
+    <button onclick="addToCart('تب كاوية T12 MECHANIC', 10000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="تبات كاوية">
+    <img src="images/tip or.png" alt="تب كاوية اصلي">
+    <h4>تب كاوية اصلي</h4>
+    <p>تب كاوية بجودة عالية متوفر بثلاث أنواع (عدل، معكوف، شفرة)، مثالي للحام الدقيق.</p>
+    <div class="price">١٠,٠٠٠ د.ع</div>
+    <button onclick="addToCart('تب كاوية اصلي', 10000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="تبات كاوية">
+    <img src="images/tip or222.png" alt="تب كاوية شفرة">
+    <h4>تب كاوية شفرة</h4>
+    <p>تب كاوية شفرة بتصميم احترافي يضمن دقة في الصيانة ولحام ثابت.</p>
+    <div class="price">٨,٠٠٠ د.ع</div>
+    <button onclick="addToCart('تب كاوية شفرة', 8000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="تبات كاوية">
+    <img src="images/tip set.png" alt="سيت تب كاوية اصلي نحاسي">
+    <h4>سيت تب كاوية اصلي نحاسي</h4>
+    <p>مجموعة تب كاوية نحاسية بجودة عالية لتحسين كفاءة اللحام.</p>
+    <div class="price">٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('سيت تب كاوية اصلي نحاسي', 9000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="تبات كاوية">
+    <img src="images/set tip.png" alt="سيت تب كاوية اصلي حديد">
+    <h4>سيت تب كاوية اصلي حديد</h4>
+    <p>مجموعة تب كاوية أصلية من الحديد بجودة عالية، مثالية لجميع أنواع اللحام الإلكتروني. تضمن أداءً ثابتًا وعمرًا طويلًا، بسعر مميز (7) ألف دينار فقط!</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('سيت تب كاوية اصلي حديد', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="تبات كاوية">
+    <img src="images/tip jbc.png" alt="تب كاوية JBC AiXun">
+    <h4>تب كاوية JBC AiXun</h4>
+    <p>تب كاوية نوع JBC من شركة AiXun العالمية، يتميز بجودة عالية وأداء مثالي للحام الدقيق في الصيانة الإلكترونية.</p>
+    <div class="price">١٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('تب كاوية JBC AiXun', 15000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="تبات كاوية">
+    <img src="images/tip maant.png" alt="تب كاوية JBC Ma Ant">
+    <h4>تب كاوية JBC Ma Ant</h4>
+    <p>تب كاوية JBC من شركة Ma Ant، يتميز بجودة تصنيع عالية وأداء احترافي يناسب جميع أعمال الصيانة الدقيقة.</p>
+    <div class="price">١٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('تب كاوية JBC Ma Ant', 17000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="تبات كاوية">
+    <img src="images/tip qanli.png" alt="تب كاوية QiAnLi">
+    <h4>تب كاوية QiAnLi</h4>
+    <p>تب كاوية أصلي من شركة QiAnLi العالمية، يتميز بعمر طويل وأداء ثابت يناسب جميع احتياجات الصيانة الاحترافية.</p>
+    <div class="price">١٠,٠٠٠ د.ع</div>
+    <button onclick="addToCart('تب كاوية QiAnLi', 10000)">أضف إلى السلة</button>
+</div>
+
+
+            <!-- سيم توصيل -->
+            <div class="product-card" data-category="سيم توصيل">
+    <img src="images/seam tosel.png" alt="سيم توصيل MECHANIC">
+    <h4>سيم توصيل MECHANIC</h4>
+    <p>سيم توصيل عالي الجودة من شركة MECHANIC، بطول 200 متر وقطر 0.02 مم، يمنحك أداءً مثالياً عند التعامل مع الأجهزة الدقيقة.</p>
+    <div class="price">٨,٠٠٠ د.ع</div>
+    <button onclick="addToCart('سيم توصيل MECHANIC', 8000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="سيم توصيل">
+    <img src="images/sim ql3.png" alt="عدة سيم رفع كاملة">
+    <h4>عدة سيم رفع كاملة</h4>
+    <p>وصول عدة سيم رفع متكاملة، مثالية لفنيي الصيانة لضمان أداء دقيق وسهل.</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('عدة سيم رفع كاملة', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="سيم توصيل">
+    <img src="images/sim toseel.png" alt="سيم توصيل رفيع جمبر 0.10 ملم">
+    <h4>سيم توصيل رفيع جمبر 0.10 ملم</h4>
+    <p>سيم توصيل رفيع بجودة عالية بقطر 0.10 ملم، مثالي لإصلاح الدوائر الدقيقة وتوصيل المكونات الإلكترونية بسهولة واحترافية.</p>
+    <div class="price">٢,٠٠٠ د.ع</div>
+    <button onclick="addToCart('سيم توصيل رفيع جمبر 0.10 ملم', 2000)">أضف إلى السلة</button>
+</div>
+
+
+
+            <!-- صولدر سيم -->
+           <div class="product-card" data-category="صولدر سيم">
+    <img src="images/soldr mecha.png" alt="صولدر اصلي MCN">
+    <h4>صولدر اصلي MCN</h4>
+    <p>صولدر عالي النقاء من شركة (MCN)، يضمن لحامًا متينًا وسلسًا دون تشويش، ضروري لكل فني صيانة يبحث عن الجودة الاحترافية.</p>
+    <div class="price">٨,٠٠٠ د.ع</div>
+    <button onclick="addToCart('صولدر اصلي MCN', 8000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صولدر سيم">
+    <img src="images/soldr mec2.png" alt="الصولدر الاحترافي MECHANIC">
+    <h4>الصولدر الاحترافي MECHANIC</h4>
+    <p>صولدر احترافي من (MECHANIC)، يوفر تجربة لحام مثالية بفضل تركيبته الخاصة، يضمن توصيلًا كهربائيًا ممتازًا ويمنع الأكسدة.</p>
+    <div class="price">١٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('الصولدر الاحترافي MECHANIC', 14000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صولدر سيم">
+    <img src="images/soldr bat.png" alt="صولدر بطارية صغير اصلي">
+    <h4>صولدر بطارية صغير اصلي</h4>
+    <p>صولدر بطارية صغير بجودة تصنيع ممتازة للحصول على لحام دقيق وسهل.</p>
+    <div class="price">٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('صولدر بطارية صغير اصلي', 4000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صولدر سيم">
+    <img src="images/soldr 3adi.png" alt="صولدر عملي MCN">
+    <h4>صولدر عملي MCN</h4>
+    <p>صولدر عملي ممتاز من شركة (MCN) العالمية، يتميز بجودة لحام عالية وثبات في الأداء، مثالي لفنيي الصيانة الذين يبحثون عن الكفاءة والاحترافية.</p>
+    <div class="price">٦,٠٠٠ د.ع</div>
+    <button onclick="addToCart('صولدر عملي MCN', 6000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صولدر سيم">
+    <img src="images/soldr bat2.png" alt="صولدر بطارية اصلي">
+    <h4>صولدر بطارية اصلي</h4>
+    <p>صولدر بطارية بجودة أصلية يضمن لحاماً نظيفاً وثابتاً.</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('صولدر بطارية اصلي', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صولدر سيم">
+    <img src="images/soldr relif.png" alt="صولدر اصلي RELIFE">
+    <h4>صولدر اصلي RELIFE</h4>
+    <p>صولدر احترافي من شركة (RELIFE) العالمية، يوفر لحامًا دقيقًا وثابتًا بجودة عالية.</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('صولدر اصلي RELIFE', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صولدر سيم">
+    <img src="images/soldr mechanic.png" alt="صولدر اصلي MECHANIC">
+    <h4>صولدر اصلي MECHANIC</h4>
+    <p>صولدر بجودة عالية من شركة (MECHANIC)، يوفر لحامًا متينًا ودقيقًا للمكونات الإلكترونية.</p>
+    <div class="price">٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('صولدر اصلي MECHANIC', 9000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صولدر سيم">
+    <img src="images/soldr22222222.png" alt="صولدر سيم 0.8 ملم وزن 50 غرام">
+    <h4>صولدر سيم 0.8 ملم وزن 50 غرام</h4>
+    <p>صولدر سيم بجودة عالية بقطر 0.8 ملم ووزن 50 غرام، يوفر لحامًا متينًا وسلسًا مع توصيل كهربائي ممتاز، مثالي لأعمال الصيانة الدقيقة.</p>
+    <div class="price">٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('صولدر سيم 0.8 ملم وزن 50 غرام', 4000)">أضف إلى السلة</button>
+</div>
+
+
+
+
+            <!-- صولدر سائل -->
+           <div class="product-card" data-category="صولدر سائل">
+    <img src="images/soldr saal44.png" alt="صولدر سائل احترافي MA ANT">
+    <h4>صولدر سائل احترافي MA ANT</h4>
+    <p>صولدر سائل بدرجة حرارة (158) من شركة (MA ANT) العالمية، يوفر لحامًا نظيفًا وقويًا، مناسب للإصلاحات الدقيقة.</p>
+    <div class="price">١٠,٠٠٠ د.ع</div>
+    <button onclick="addToCart('صولدر سائل احترافي MA ANT', 10000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صولدر سائل">
+    <img src="images/soldr sal55.png" alt="صولدر سائل احترافي LOUWEI">
+    <h4>صولدر سائل احترافي LOUWEI</h4>
+    <p>صولدر سائل بدرجة حرارة (138) من شركة (LOUWEI)، يعمل بكفاءة عالية ويمنع الأكسدة، مثالي لأعمال الصيانة الدقيقة.</p>
+    <div class="price">١٠,٠٠٠ د.ع</div>
+    <button onclick="addToCart('صولدر سائل احترافي LOUWEI', 10000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صولدر سائل">
+    <img src="images/flex prof2.png" alt="صولدر سائل احترافي MECHANIC">
+    <h4>صولدر سائل احترافي MECHANIC</h4>
+    <p>صولدر سائل احترافي من MECHANIC بجودة عالية، يساعد في إنجاز عمليات اللحام بسهولة واحترافية.</p>
+    <div class="price">١٠,٠٠٠ د.ع</div>
+    <button onclick="addToCart('صولدر سائل احترافي MECHANIC', 10000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صولدر سائل">
+    <img src="images/soldr 138.png" alt="صولدر سائل احترافي بدرجة (138c)">
+    <h4>صولدر سائل احترافي بدرجة (138c)</h4>
+    <p>صولدر سائل بدرجة 138c، يتميز بتركيبته التي تضمن لحاماً متيناً وسهل الاستخدام.</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('صولدر سائل احترافي بدرجة (138c)', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صولدر سائل">
+    <img src="images/solfr 158.png" alt="صولدر سائل احترافي بدرجة (158c)">
+    <h4>صولدر سائل احترافي بدرجة (158c)</h4>
+    <p>صولدر بدرجة 158c يوفر لحاماً نظيفاً وثابتاً للمكونات الدقيقة في الأجهزة الإلكترونية.</p>
+    <div class="price">١٠,٠٠٠ د.ع</div>
+    <button onclick="addToCart('صولدر سائل احترافي بدرجة (158c)', 10000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صولدر سائل">
+    <img src="images/soldr 158-2.png" alt="صولدر سائل احترافي بدرجة (158c)">
+    <h4>صولدر سائل احترافي بدرجة (158c)</h4>
+    <p>صولدر احترافي بدرجة 158c بجودة عالية، يضمن لحاماً سلساً دون التأثير على الدوائر الإلكترونية.</p>
+    <div class="price">٨,٠٠٠ د.ع</div>
+    <button onclick="addToCart('صولدر سائل احترافي بدرجة (158c)', 8000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صولدر سائل">
+    <img src="images/soldr saal55555.png" alt="صولدر سائل اصلي YAXUN">
+    <h4>صولدر سائل اصلي YAXUN</h4>
+    <p>صولدر سائل بجودة عالية من شركة (YAXUN)، يمنحك لحامًا دقيقًا وثابتًا للمكونات الإلكترونية.</p>
+    <div class="price">٨,٠٠٠ د.ع</div>
+    <button onclick="addToCart('صولدر سائل اصلي YAXUN', 8000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صولدر سائل">
+    <img src="images/soldr 158 sal.png" alt="صولدر سائل MECHANIC 148C">
+    <h4>صولدر سائل MECHANIC 148C</h4>
+    <p>صولدر سائل احترافي من شركة (MECHANIC) بدرجة حرارة 148C، يمنحك لحامًا ثابتًا ودقيقًا للمكونات الحساسة.</p>
+    <div class="price">١٠,٠٠٠ د.ع</div>
+    <button onclick="addToCart('صولدر سائل MECHANIC 148C', 10000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صولدر سائل">
+    <img src="images/soldr 3sara.png" alt="صولدر عصارة MECHANIC">
+    <h4>صولدر عصارة MECHANIC</h4>
+    <p>صولدر عصارة احترافي من شركة (MECHANIC)، يتميز بجودة عالية وسهولة في الاستخدام لصيانة دقيقة وفعالة.</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('صولدر عصارة MECHANIC', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صولدر سائل">
+    <img src="images/soldr 3sara22.png" alt="صولدر سائل عصارة RELIFE">
+    <h4>صولدر سائل عصارة RELIFE</h4>
+    <p>صولدر سائل بجودة عالية من شركة (RELIFE)، يضمن لحام احترافي وسلس للمكونات الإلكترونية.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('صولدر سائل عصارة RELIFE', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="صولدر سائل">
+    <img src="images/soldr saaal.png" alt="صولدر علبة YAXUN">
+    <h4>صولدر علبة YAXUN</h4>
+    <p>صولدر علبة بجودة عالية من شركة (YAXUN)، يوفر لحام ثابت وقوي للأعمال الإلكترونية.</p>
+    <div class="price">٣,٠٠٠ د.ع</div>
+    <button onclick="addToCart('صولدر علبة YAXUN', 3000)">أضف إلى السلة</button>
+</div>
+
+
+
+
+            <!-- فلكس -->
+           <div class="product-card" data-category="فلكس">
+    <img src="images/flex org1.png" alt="فلكس اصلي علبة كبيرة">
+    <h4>فلكس اصلي علبة كبيرة</h4>
+    <p>فلكس أصلي بجودة ممتازة، يضمن تدفق اللحام بسهولة للحصول على نتائج مثالية ودقيقة.</p>
+    <div class="price">٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('فلكس اصلي علبة كبيرة', 9000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="فلكس">
+    <img src="images/flex 3lba2.png" alt="فلكس عصارة MECHANIC">
+    <h4>فلكس عصارة MECHANIC</h4>
+    <p>فلكس عصارة بجودة عالية من شركة (MECHANIC)، يساعد في تحسين عملية اللحام ويوفر تدفقًا سلسًا للصلصال، مثالي لأعمال الصيانة الدقيقة.</p>
+    <div class="price">١٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('فلكس عصارة MECHANIC', 15000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="فلكس">
+    <img src="images/flex pro.png" alt="فلكس احترافي RELIFE">
+    <h4>فلكس احترافي RELIFE</h4>
+    <p>فلكس احترافي من شركة RELIFE العالمية، يوفر أداءً ممتازًا في عمليات الصيانة ويضمن لحاماً دقيقاً.</p>
+    <div class="price">١٣,٠٠٠ د.ع</div>
+    <button onclick="addToCart('فلكس احترافي RELIFE', 13000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="فلكس">
+    <img src="images/flex chep.png" alt="فلكس علبة FU XIN">
+    <h4>فلكس علبة FU XIN</h4>
+    <p>فلكس عالي الجودة من شركة (FU XIN)، يساعد في تحسين أداء اللحام وضمان توصيل مثالي للوصلات الإلكترونية.</p>
+    <div class="price">٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('فلكس علبة FU XIN', 4000)">أضف إلى السلة</button>
+</div>
+
+
+
+
+
+            <!-- كيبلات -->
+           <div class="product-card" data-category="كيبلات">
+    <img src="images/444.png" alt="كيبل بور سبلاي SUNSHINE">
+    <h4>كيبل بور سبلاي SUNSHINE</h4>
+    <p>كيبل بور سبلاي أصلي من SUNSHINE، يتميز بجودة تصنيع رائعة، مناسب لمهندسي الصيانة والمبتدئين في عالم الإلكترونيات.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('كيبل بور سبلاي SUNSHINE', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="كيبلات">
+    <img src="images/kebl power iphone.png" alt="كيبل بور سبلاي MECHANIC">
+    <h4>كيبل بور سبلاي MECHANIC</h4>
+    <p>كيبل بور سبلاي مثالي لتشغيل أغلب أجهزة الايفون بأداء ثابت وجودة تصنيع عالية لضمان عمر أطول للاستخدام اليومي.</p>
+    <div class="price">١٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('كيبل بور سبلاي MECHANIC', 15000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="كيبلات">
+    <img src="images/kebl power iphone-2.png" alt="كيبل بور سبلاي عالي الجودة">
+    <h4>كيبل بور سبلاي عالي الجودة</h4>
+    <p>كيبل مميز مع تصميم أنيق! يوفر لك توصيلًا ثابتًا لجميع الأجهزة مع مقاومة عالية للحرارة والطاقة لضمان تشغيل آمن وفعال.</p>
+    <div class="price">١٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('كيبل بور سبلاي عالي الجودة', 19000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="كيبلات">
+    <img src="images/kebl ovometer.png" alt="كيبل اوفوميتر">
+    <h4>كيبل اوفوميتر</h4>
+    <p>كيبل أوفوميتر عالي الجودة، يوفر لك دقة متناهية في القياس مع موصلات متينة لضمان أداء طويل الأمد. ضروري لكل مهندس صيانة!</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('كيبل اوفوميتر', 5000)">أضف إلى السلة</button>
+</div>
+
+
+
+
+
+            <!-- تيسترات -->
+           <div class="product-card" data-category="تيسترات">
+    <img src="images/tester modra3.png" alt="تيستر شحن سريع">
+    <h4>تيستر شحن سريع</h4>
+    <p>اختبر أجهزة الشحن بسرعة وكفاءة! تيستر يدعم شحن 100 واط مع شاشة عرض أنيقة تتيح لك قياس الأداء بسهولة ودقة.</p>
+    <div class="price">٤٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('تيستر شحن سريع', 44000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="تيسترات">
+    <img src="images/mini tester.png" alt="تيستر محمول SUNSHINE">
+    <h4>تيستر محمول SUNSHINE</h4>
+    <p>أداة صغيرة بقدرات كبيرة! تيستر محمول من شركة SUNSHINE يساعدك على فحص البطاريات والشواحن بسهولة مع شاشة واضحة لعرض النتائج.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('تيستر محمول SUNSHINE', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="تيسترات">
+    <img src="images/tester mahmool.png" alt="تيستر محمول من شركة (SUNSHINE) العالمية">
+    <h4>تيستر محمول من شركة (SUNSHINE) العالمية</h4>
+    <p>تيستر محمول عالي الدقة من (SUNSHINE)، يمنحك قراءة واضحة وسريعة لمعلومات الجهاز، ضروري لأي فني صيانة محترف.</p>
+    <div class="price">٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('تيستر محمول من شركة (SUNSHINE) العالمية', 9000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="تيسترات">
+    <img src="images/tester pen.png" alt="تيستر وملتميتر قلم شحن">
+    <h4>تيستر وملتميتر قلم شحن</h4>
+    <p>تيستر وملتميتر عملي بتصميم قلم أنيق، يعمل ببطارية الريموت لإعطاء قراءات دقيقة وسريعة في كل مرة تستخدمه فيها.</p>
+    <div class="price">١٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('تيستر وملتميتر قلم شحن', 19000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="تيسترات">
+    <img src="images/tester 6 port fast.png" alt="شاحن (6) بورت يدعم الشحن السريع">
+    <h4>شاحن (6) بورت يدعم الشحن السريع</h4>
+    <p>شاحن (6) بورت بتصميم عملي وأداء عالي، يدعم الشحن السريع لجميع الأجهزة الحديثة، مثالي للاستخدام اليومي في ورش الصيانة.</p>
+    <div class="price">٢٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('شاحن (6) بورت يدعم الشحن السريع', 27000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="تيسترات">
+    <img src="images/tester 8 port fast.png" alt="شاحن (8) بورت يدعم الشحن السريع">
+    <h4>شاحن (8) بورت يدعم الشحن السريع</h4>
+    <p>شاحن متطور يدعم 8 منافذ شحن سريعة، مناسب لشحن عدة أجهزة في وقت واحد بكفاءة وأمان.</p>
+    <div class="price">٣٠,٠٠٠ د.ع</div>
+    <button onclick="addToCart('شاحن (8) بورت يدعم الشحن السريع', 30000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="تيسترات">
+    <img src="images/mini tester.png" alt="تيستر محمول من شركة (SUNSHINE)">
+    <h4>تيستر محمول من شركة (SUNSHINE)</h4>
+    <p>تيستر محمول بحجم صغير لكن أداء كبير، يمنحك قراءات دقيقة للفولتية والتيار، أداة ضرورية لأي فني صيانة.</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('تيستر محمول من شركة (SUNSHINE)', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="تيسترات">
+    <img src="images/tester mcn.png" alt="تيستر شاحن MCN">
+    <h4>تيستر شاحن MCN</h4>
+    <p>تيستر متطور من شركة (MCN)، يدعم قراءة التيار والفولتية بدقة عالية، يساعدك في تشخيص مشاكل الشحن بسرعة وكفاءة.</p>
+    <div class="price">٣٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('تيستر شاحن MCN', 34000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="تيسترات">
+    <img src="images/tester 5 port11.png" alt="تيستر شاحن (5) منافذ">
+    <h4>تيستر شاحن (5) منافذ</h4>
+    <p>تيستر شاحن بخمسة منافذ يدعم الشحن السريع، مثالي لاختبار كفاءة الشواحن والكابلات، ويتميز بواجهة عرض رقمية واضحة.</p>
+    <div class="price">٢٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('تيستر شاحن (5) منافذ', 24000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="تيسترات">
+    <img src="images/tester 6 port.png" alt="شاحن 6 بورت YAXUN">
+    <h4>شاحن 6 بورت YAXUN</h4>
+    <p>شاحن 6 منافذ بشحن سريع وجودة تصنيع عالية، مثالي للورش والمحلات.</p>
+    <div class="price">٢٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('شاحن 6 بورت YAXUN', 27000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="تيسترات">
+    <img src="images/tools.png" alt="شاحن وفاحص امبيرية (6) منافذ شحن">
+    <h4>شاحن وفاحص امبيرية (6) منافذ شحن</h4>
+    <p>شاحن متعدد المنافذ يدعم الفحص والشحن السريع حتى 60 واط.</p>
+    <div class="price">٢٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('شاحن وفاحص امبيرية (6) منافذ شحن', 29000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="تيسترات">
+    <img src="images/tester yellow.png" alt="تيستر شاحن 6 بورت KaiLiwei">
+    <h4>تيستر شاحن 6 بورت KaiLiwei</h4>
+    <p>تيستر شاحن يدعم 6 منافذ من شركة (KaiLiwei) العالمية، أداء قوي وفحص دقيق للشحن.</p>
+    <div class="price">٢٣,٠٠٠ د.ع</div>
+    <button onclick="addToCart('تيستر شاحن 6 بورت KaiLiwei', 23000)">أضف إلى السلة</button>
+</div>
+
+
+
+
+
+            <!-- هيدكانات -->
+           <div class="product-card" data-category="هيدكانات">
+    <img src="images/hedcan quiek.png" alt="هيدكان وكاوية QUICK">
+    <h4>هيدكان وكاوية QUICK</h4>
+    <p>الأداة المثالية لفني الصيانة! هيدكان وكاوية من شركة QUICK المشهورة، تمنحك تحكمًا كاملاً في درجات الحرارة مع أداء احترافي عالي.</p>
+    <div class="price">١٢٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('هيدكان وكاوية QUICK', 124000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="هيدكانات">
+    <img src="images/hedqan rf4.png" alt="هيدكان RF4">
+    <h4>هيدكان RF4</h4>
+    <p>هيدكان احترافي من شركة (RF4) العالمية، يتميز بأداء عالٍ وثبات في درجة الحرارة، مناسب للعمل المتواصل في مراكز الصيانة.</p>
+    <div class="price">١٠٠,٠٠٠ د.ع</div>
+    <button onclick="addToCart('هيدكان RF4', 100000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="هيدكانات">
+    <img src="images/hedqan pro.png" alt="كاوية وهيدكان KAILIWEI">
+    <h4>كاوية وهيدكان KAILIWEI</h4>
+    <p>وصول كاوية وهيدكان من (KAILIWEI)، أداء قوي وجودة تصنيع عالية، منتج مثالي لمراكز الصيانة المحترفة.</p>
+    <div class="price">٥٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('كاوية وهيدكان KAILIWEI', 59000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="هيدكانات">
+    <img src="images/heqan 850.png" alt="هيدكان YAXUN">
+    <h4>هيدكان YAXUN</h4>
+    <p>هيدكان من YAXUN بجودة عالية، يوفر تدفق هواء مستقر ودقيق لصيانة الأجهزة الإلكترونية.</p>
+    <div class="price">٧٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('هيدكان YAXUN', 79000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="هيدكانات">
+    <img src="images/hedqan 8206.png" alt="JCD-8206 هيت كان مع كاوية - Hot Air Rework & Soldering Station">
+    <h4>JCD-8206 هيت كان مع كاوية - Hot Air Rework & Soldering Station</h4>
+    <p>محطة لحام احترافية 2 في 1 تحتوي على هيت كان وكاوية لحام، مصممة بدقة لتوفير تحكم مثالي في درجة الحرارة وأداء عالي لصيانة الإلكترونيات.</p>
+    <div class="price">٧٨,٠٠٠ د.ع</div>
+    <button onclick="addToCart('JCD-8206 هيت كان مع كاوية - Hot Air Rework & Soldering Station', 78000)">أضف إلى السلة</button>
+</div>
+
+
+
+
+            <!-- بور سبلاي -->
+           <div class="product-card" data-category="بور سبلاي">
+    <img src="images/power supply mini.png" alt="بور سبلاي ميني محمول بقوة (3) امبير">
+    <h4>بور سبلاي ميني محمول بقوة (3) امبير</h4>
+    <p>بور سبلاي ميني عملي بقوة 3 أمبير، يضمن استقرار الفولتية لتجنب أي خلل أثناء الصيانة، صغير الحجم لكنه قوي جدًا!</p>
+    <div class="price">١٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('بور سبلاي ميني محمول بقوة (3) امبير', 19000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="بور سبلاي">
+    <img src="images/power 2.png" alt="بور سبلاي ذات شاشتين عرض رقمية بقوة (2) امبير">
+    <h4>بور سبلاي ذات شاشتين عرض رقمية بقوة (2) امبير</h4>
+    <p>بور سبلاي احترافي بشاشتين رقميتين لعرض الفولتية والتيار بوضوح، بقوة 2 أمبير لتلبية احتياجات جميع الفنيين.</p>
+    <div class="price">٣٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('بور سبلاي ذات شاشتين عرض رقمية بقوة (2) امبير', 35000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="بور سبلاي">
+    <img src="images/power supply mini2 prof.png" alt="بور سبلاي ميني محمول">
+    <h4>بور سبلاي ميني محمول</h4>
+    <p>بور سبلاي صغير الحجم لكن قوي الأداء، مثالي لتوفير طاقة ثابتة أثناء عمليات الصيانة الدقيقة، مزود بشاشة عرض أنيقة.</p>
+    <div class="price">٦٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('بور سبلاي ميني محمول', 64000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="بور سبلاي">
+    <img src="images/power prof.png" alt="بور سبلاي احترافي SUNSHINE">
+    <h4>بور سبلاي احترافي SUNSHINE</h4>
+    <p>بور سبلاي احترافي بقوة (5 أمبير & 30 فولت) من شركة (SUNSHINE)، يوفر دقة في تنظيم الجهد والتيار، مثالي لاختبار الأجهزة الإلكترونية.</p>
+    <div class="price">١٠٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('بور سبلاي احترافي SUNSHINE', 105000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="بور سبلاي">
+    <img src="images/power sply.png" alt="بور سبلاي (5 امبير) SUNSHINE">
+    <h4>بور سبلاي (5 امبير) SUNSHINE</h4>
+    <p>بور سبلاي احترافي من شركة SUNSHINE، يوفر طاقة ثابتة لاختبار وتشغيل الأجهزة أثناء الصيانة.</p>
+    <div class="price">٦٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('بور سبلاي (5 امبير) SUNSHINE', 69000)">أضف إلى السلة</button>
+</div>
+
+
+
+
+            <!-- كاويات -->
+           <div class="product-card" data-category="كاويات">
+    <img src="images/kawya.png" alt="كاوية كهربائية">
+    <h4>كاوية كهربائية</h4>
+    <p>كاوية كهربائية أصلية، توفر لك أداءً قوياً وثباتًا في درجة الحرارة لتحقيق لحام دقيق واحترافي. مناسبة للصيانة اليومية والإلكترونيات الحساسة!</p>
+    <div class="price">١٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('كاوية كهربائية', 19000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="كاويات">
+    <img src="images/kaweia t12.png" alt="كاوية T12 من شركة KAILIWEI">
+    <h4>كاوية T12 من شركة KAILIWEI</h4>
+    <p>كاوية احترافية T12 توفر تسخينًا سريعًا ودقة عالية للحام، مثالية لأعمال الصيانة المتقدمة.</p>
+    <div class="price">٣٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('كاوية T12 من شركة KAILIWEI', 39000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="كاويات">
+    <img src="images/kawya jyd.png" alt="كاوية احترافية JYD">
+    <h4>كاوية احترافية JYD</h4>
+    <p>كاوية عالية الأداء من (JYD)، توفر تسخينًا سريعًا وتحكمًا دقيقًا في الحرارة، مثالية لأعمال اللحام الاحترافية.</p>
+    <div class="price">٦٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('كاوية احترافية JYD', 69000)">أضف إلى السلة</button>
+</div>
+
+            <!-- اوفوميتر -->
+           <div class="product-card" data-category="اوفوميتر">
+    <img src="images/ovometar.png" alt="اوفوميتر SUNSHINE">
+    <h4>اوفوميتر SUNSHINE</h4>
+    <p>جهاز قياس احترافي من SUNSHINE، صغير الحجم وسهل الحمل، مثالي لفنيي الصيانة والمبتدئين للحصول على قياسات دقيقة وسريعة.</p>
+    <div class="price">١٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('اوفوميتر SUNSHINE', 19000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="اوفوميتر">
+    <img src="images/ovo metar mini.png" alt="اوفوميتر ميني محمول من شركة (KeiLiwei)">
+    <h4>اوفوميتر ميني محمول من شركة (KeiLiwei)</h4>
+    <p>اوفوميتر ميني محمول، صغير الحجم لكنه قوي الأداء! مثالي لفحص الدوائر بدقة عالية من شركة (KeiLiwei).</p>
+    <div class="price">١٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('اوفوميتر ميني محمول من شركة (KeiLiwei)', 19000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="اوفوميتر">
+    <img src="images/ovo metar.png" alt="اوفوميتر اصلي محمول من شركة (MECHANIC)">
+    <h4>اوفوميتر اصلي محمول من شركة (MECHANIC)</h4>
+    <p>اوفوميتر محمول بجودة عالية من (MECHANIC)، أداة ضرورية لاختبار وقياس الفولتية والتيار والمقاومة بدقة فائقة.</p>
+    <div class="price">٢٢,٠٠٠ د.ع</div>
+    <button onclick="addToCart('اوفوميتر اصلي محمول من شركة (MECHANIC)', 22000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="اوفوميتر">
+    <img src="images/ovo meter.png" alt="اوفوميتر ميني محمول">
+    <h4>اوفوميتر ميني محمول</h4>
+    <p>اوفوميتر محمول بجودة تصنيع عالية، دقة فائقة وسهل الاستخدام لفحص الدوائر الكهربائية.</p>
+    <div class="price">١٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('اوفوميتر ميني محمول', 14000)">أضف إلى السلة</button>
+</div>
+
+
+
+
+            <!-- مجهر -->
+           <div class="product-card" data-category="مجهر">
+    <img src="images/mejhar.png" alt="مجهر احترافي عملي - 600X Digital Microscope">
+    <h4>مجهر احترافي عملي - 600X Digital Microscope</h4>
+    <p>مجهر دقيق بقدرة تقريب تصل إلى (600X) يمنحك رؤية واضحة لأدق التفاصيل! يعمل على الشحن والكهرباء، مزود بستاند متين وإضاءة LED ساطعة لضمان فحص احترافي ودقيق.</p>
+    <div class="price">٨٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('مجهر احترافي عملي - 600X Digital Microscope', 84000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="مجهر">
+    <img src="images/3dsa mahmool.png" alt="عدسة تكبير صغيرة قلاب - 30X Magnifier">
+    <h4>عدسة تكبير صغيرة قلاب - 30X Magnifier</h4>
+    <p>عدسة تكبير محمولة بدقة 30X، صغيرة الحجم مع تصميم قلاب لسهولة الحمل والاستخدام. مثالية لفحص التفاصيل الدقيقة في الإلكترونيات والمجوهرات والمكونات الصغيرة.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('عدسة تكبير صغيرة قلاب - 30X Magnifier', 5000)">أضف إلى السلة</button>
+</div>
+
+
+
+
+
+            <!-- يدات -->
+            <div class="product-card" data-category="يدات">
+    <img src="images/yada kawia.png" alt="يدة كاوية فحل ونثية من شركة (BAKU)">
+    <h4>يدة كاوية فحل ونثية من شركة (BAKU)</h4>
+    <p>يدة كاوية أصلية من (BAKU)، مصممة بدقة للاستخدام مع أغلب الكوايات الاحترافية، تمنحك قبضة مريحة وتحكمًا مثاليًا في عملية اللحام.</p>
+    <div class="price">٨,٠٠٠ د.ع</div>
+    <button onclick="addToCart('يدة كاوية فحل ونثية من شركة (BAKU)', 8000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="يدات">
+    <img src="images/yada kaweia quk.png" alt="يدة كاوية هيدكان كويك 706">
+    <h4>يدة كاوية هيدكان كويك 706</h4>
+    <p>يدة كاوية أصلية لجهاز هيدكان كويك 706، تضمن كفاءة عمل واستجابة سريعة للحرارة.</p>
+    <div class="price">٣٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('يدة كاوية هيدكان كويك 706', 39000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="يدات">
+    <img src="images/yada hedkan quk.png" alt="يدة هيدكان كويك 706">
+    <h4>يدة هيدكان كويك 706</h4>
+    <p>يدة أصلية لجهاز هيدكان كويك 706، تضمن كفاءة عمل واستجابة سريعة للحرارة.</p>
+    <div class="price">٤٣,٠٠٠ د.ع</div>
+    <button onclick="addToCart('يدة هيدكان كويك 706', 43000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="يدات">
+    <img src="images/yada kawya 2 yada.png" alt="يدة الكاوية الثنائية المزدوجة">
+    <h4>يدة الكاوية الثنائية المزدوجة</h4>
+    <p>يدة كاوية مزدوجة احترافية، توفر تحكم دقيق أثناء اللحام، مصممة للاستخدام الطويل.</p>
+    <div class="price">١٠,٠٠٠ د.ع</div>
+    <button onclick="addToCart('يدة الكاوية الثنائية المزدوجة', 10000)">أضف إلى السلة</button>
+</div>
+
+
+
+
+            <!-- منوع -->
+            <div class="product-card" data-category="منوع">
+    <img src="images/333.png" alt="غسالة موبايل YAXUN">
+    <h4>غسالة موبايل YAXUN</h4>
+    <p>نظافة فائقة وسرعتان في جهاز واحد! غسالة موبايل أصلية من YAXUN تضمن لك تنظيفًا احترافيًا للمكونات الإلكترونية وإزالة الأوساخ دون ضرر.</p>
+    <div class="price">٤٢,٠٠٠ د.ع</div>
+    <button onclick="addToCart('غسالة موبايل YAXUN', 42000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/sha7n bat mini.png" alt="شاحن بطاريات الايفون">
+    <h4>شاحن بطاريات الايفون</h4>
+    <p>وداعًا للبطاريات الفارغة! شاحن بطاريات الايفون الأصلي من SUNSHINE يضمن لك شحنًا سريعًا وآمنًا مع حماية متكاملة.</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('شاحن بطاريات الايفون', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/sim card.png" alt="كتر سيم كارت">
+    <h4>كتر سيم كارت</h4>
+    <p>قص الشرائح بسهولة واحترافية! كتر سيم كارت عالي الجودة، مصمم بدقة لقص الشرائح بدون إتلافها، مناسب لجميع أنواع الشرائح!</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('كتر سيم كارت', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/download pcs.png" alt="قطعة وضع الداونلود">
+    <h4>قطعة وضع الداونلود</h4>
+    <p>أداة ضرورية لمهندسي الصيانة! تساعدك على إدخال أجهزة سامسونج في وضع الداونلود بسهولة لإجراء الفلاش والصيانة البرمجية.</p>
+    <div class="price">٣,٠٠٠ د.ع</div>
+    <button onclick="addToCart('قطعة وضع الداونلود', 3000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/rasia hedkan.png" alt="راسية هيدكان جوكر">
+    <h4>راسية هيدكان جوكر</h4>
+    <p>راسية هيدكان جوكر مصممة لتناسب جميع الأجهزة، تمنحك دقة عالية في العمل وتساعدك في التركيز على أدق التفاصيل أثناء الصيانة.</p>
+    <div class="price">٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('راسية هيدكان جوكر', 4000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/shablna iphne 3d.png" alt="شبلنة 3D اصلية من شركة (MECHANIC)">
+    <h4>شبلنة 3D اصلية من شركة (MECHANIC)</h4>
+    <p>شبلنة 3D احترافية من (MECHANIC)، مصممة خصيصًا لدقة متناهية عند تثبيت الآيسيات لكافة أجهزة الآيفون. جودة مميزة لاستخدام سهل وفعال.</p>
+    <div class="price">١٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('شبلنة 3D اصلية من شركة (MECHANIC)', 14000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/shablna dfter.png" alt="شبلنة دفترية احترافية">
+    <h4>شبلنة دفترية احترافية</h4>
+    <p>شبلنة دفترية منوعة لجميع الاجهزة وبسعر مميز</p>
+    <div class="price">٣٢,٠٠٠ د.ع</div>
+    <button onclick="addToCart('شبلنة دفترية احترافية', 32000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/oda mono3a.png" alt="عدة صيانة متكاملة من شركة YAXUN">
+    <h4>عدة صيانة متكاملة من شركة YAXUN</h4>
+    <p>مجموعة أدوات صيانة متكاملة من (YAXUN)، تحتوي على كل ما يحتاجه الفني المحترف لإنجاز عمليات الصيانة بسهولة واحترافية.</p>
+    <div class="price">١٢,٠٠٠ د.ع</div>
+    <button onclick="addToCart('عدة صيانة متكاملة من شركة YAXUN', 12000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/mahlol ra3 lcd.png" alt="محلول رفع فريم شاشات الايفون">
+    <h4>محلول رفع فريم شاشات الايفون</h4>
+    <p>محلول خاص لرفع فريم شاشات الآيفون بسهولة وأمان، ضروري لكل فني صيانة محترف.</p>
+    <div class="price">١٠,٠٠٠ د.ع</div>
+    <button onclick="addToCart('محلول رفع فريم شاشات الايفون', 10000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/shafta1.png" alt="شافطة من شركة (RELIFE)">
+    <h4>شافطة من شركة (RELIFE)</h4>
+    <p>شافطة صولدر بجودة عالية من (RELIFE)، تضمن تنظيفًا فعالًا وآمنًا بعد عمليات اللحام.</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('شافطة من شركة (RELIFE)', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/shelder.png" alt="شيلدر نوعية ممتازة">
+    <h4>شيلدر نوعية ممتازة</h4>
+    <p>شيلدر بجودة ممتازة، يوفر الحماية اللازمة أثناء عمليات الصيانة الدقيقة.</p>
+    <div class="price">٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('شيلدر نوعية ممتازة', 4000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/dril.png" alt="دريل تنظيف الصمغ الاحترافي MECHANIC">
+    <h4>دريل تنظيف الصمغ الاحترافي MECHANIC</h4>
+    <p>دريل احترافي مصمم لإزالة بقايا الصمغ واللاصق بدقة وسرعة، مثالي لصيانة الشاشات واللوحات الإلكترونية.</p>
+    <div class="price">٢٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('دريل تنظيف الصمغ الاحترافي MECHANIC', 24000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/stand.png" alt="ستاند درنفيس وصولدر">
+    <h4>ستاند درنفيس وصولدر</h4>
+    <p>ستاند عملي لتنظيم أدوات الصيانة مثل الدرايفر والصولدر، يبقي أدواتك مرتبة وجاهزة للاستخدام.</p>
+    <div class="price">١٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('ستاند درنفيس وصولدر', 19000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/kasara.png" alt="كسارة ظهر ايفون MECHANIC">
+    <h4>كسارة ظهر ايفون MECHANIC</h4>
+    <p>كسارة ظهر احترافية لإزالة ظهر أجهزة الآيفون بسهولة وأمان، مثالية لصيانة الأجهزة الحديثة دون ضرر.</p>
+    <div class="price">١٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('كسارة ظهر ايفون MECHANIC', 14000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/mahlool rf3.png" alt="محلول رفع فريم شاشات الايفون RELIFE">
+    <h4>محلول رفع فريم شاشات الايفون RELIFE</h4>
+    <p>محلول متخصص يساعد في إزالة فريم شاشات الآيفون بسهولة وأمان، مناسب لجميع موديلات الآيفون.</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('محلول رفع فريم شاشات الايفون RELIFE', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/oda2222.png" alt="عدة الصيانة المنوعة SUNSHINE">
+    <h4>عدة الصيانة المنوعة SUNSHINE</h4>
+    <p>مجموعة متكاملة من الأدوات الاحترافية التي تحتاجها في عمليات الصيانة، بجودة مضمونة من (SUNSHINE).</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('عدة الصيانة المنوعة SUNSHINE', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/shswar.png" alt="شسوار صيانة YAXUN">
+    <h4>شسوار صيانة YAXUN</h4>
+    <p>شسوار صيانة قوي من (YAXUN)، مصمم لتقديم أداء ممتاز في إزالة الغراء وتجفيف اللوحات الإلكترونية.</p>
+    <div class="price">٢٢,٠٠٠ د.ع</div>
+    <button onclick="addToCart('شسوار صيانة YAXUN', 22000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/bada tem.png" alt="بادة صيانة حرارية MIJING">
+    <h4>بادة صيانة حرارية MIJING</h4>
+    <p>بادة صيانة حرارية بجودة عالية، مصنوعة من مادة مقاومة للحرارة، تحمي سطح العمل من التلف أثناء الصيانة، إضافة ضرورية لأي ورشة.</p>
+    <div class="price">٢٠,٠٠٠ د.ع</div>
+    <button onclick="addToCart('بادة صيانة حرارية MIJING', 20000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/rujena.png" alt="رجينة حجم كبير">
+    <h4>رجينة حجم كبير</h4>
+    <p>رجينة عالية الجودة بحجم (22 غم)، توفر تماسكًا قويًا وسهل الاستخدام في عمليات الصيانة الدقيقة والإلكترونية.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('رجينة حجم كبير', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/netrat.png" alt="منظف رأس كاوية MCN">
+    <h4>منظف رأس كاوية MCN</h4>
+    <p>منظف رأس كاوية (نترات الفضة) من شركة (MCN)، يزيل الرواسب والشوائب للحفاظ على أداء الكاوية، منتج ضروري لأي فني صيانة.</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('منظف رأس كاوية MCN', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/clean lens.png" alt="منظف عدسات الكاميرا 2UUL">
+    <h4>منظف عدسات الكاميرا 2UUL</h4>
+    <p>منظف عدسات الكاميرا الاحترافي من شركة (2UUL)، يزيل الأوساخ والبصمات بفعالية دون ترك آثار، ضروري لفنيي الصيانة.</p>
+    <div class="price">٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('منظف عدسات الكاميرا 2UUL', 9000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/bada heater.png" alt="بادة هيتر MCN">
+    <h4>بادة هيتر MCN</h4>
+    <p>بادة هيتر عملية وعالية الجودة من (MCN)، تحافظ على حرارة متساوية، مثالية لإصلاح الأجهزة الإلكترونية بحرفية عالية.</p>
+    <div class="price">٦٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('بادة هيتر MCN', 69000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/dril2.png" alt="دريل تنظيف الصمغ الاحترافي MECHANIC">
+    <h4>دريل تنظيف الصمغ الاحترافي MECHANIC</h4>
+    <p>دريل متطور من (MECHANIC) لإزالة الصمغ والمواد اللاصقة بسهولة، أداة مثالية لفنيي الصيانة للحصول على نتائج احترافية.</p>
+    <div class="price">٢٢,٠٠٠ د.ع</div>
+    <button onclick="addToCart('دريل تنظيف الصمغ الاحترافي MECHANIC', 22000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/fursat 22.png" alt="فرشاة متعددة الاستخدامات">
+    <h4>فرشاة متعددة الاستخدامات</h4>
+    <p>فرشاة تنظيف عالية الجودة، مثالية لإزالة الغبار والشوائب من الأجهزة الإلكترونية واللوحات الأم.</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('فرشاة متعددة الاستخدامات', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/sha7en bat2.png" alt="شاحن بطاريات جميع انواع">
+    <h4>شاحن بطاريات جميع انواع</h4>
+    <p>شاحن يدعم شحن جميع أنواع البطاريات مثل الآيفون، سامسونج، هواوي، وانفنكس، ضروري لأي فني صيانة.</p>
+    <div class="price">٢٠,٠٠٠ د.ع</div>
+    <button onclick="addToCart('شاحن بطاريات جميع انواع', 20000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/awaad tnsef.png" alt="اعواد قطن تنظيف">
+    <h4>اعواد قطن تنظيف</h4>
+    <p>أعواد قطنية عالية الجودة، تساعد في تنظيف الأجزاء الداخلية للأجهزة بحرفية ودقة.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('اعواد قطن تنظيف', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/furshaat shu7nat.png" alt="فرشاة تفريغ شحنات اصلية">
+    <h4>فرشاة تفريغ شحنات اصلية</h4>
+    <p>فرشاة مصممة لتفريغ الشحنات الكهربائية، تحمي الدوائر الإلكترونية من التلف أثناء الصيانة.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('فرشاة تفريغ شحنات اصلية', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/munathf tip.png" alt="منظف تب كاوية جلافة">
+    <h4>منظف تب كاوية جلافة</h4>
+    <p>منظف خاص برؤوس الكاوية، يزيل الأكسدة ويحافظ على الأداء العالي أثناء اللحام.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('منظف تب كاوية جلافة', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/3artha kechb.png" alt="عارضة تلفونات كبيرة خشبية">
+    <h4>عارضة تلفونات كبيرة خشبية</h4>
+    <p>عارضة خشبية أنيقة، تساعد في ترتيب وعرض الهواتف بشكل منظم داخل ورشات الصيانة والمتاجر.</p>
+    <div class="price">١٨,٠٠٠ د.ع</div>
+    <button onclick="addToCart('عارضة تلفونات كبيرة خشبية', 18000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/qarsa.png" alt="قارصة شاشات اصلية">
+    <h4>قارصة شاشات اصلية</h4>
+    <p>أداة قارصة مخصصة لإزالة شاشات الهواتف بسهولة وأمان.</p>
+    <div class="price">٢,٠٠٠ د.ع</div>
+    <button onclick="addToCart('قارصة شاشات اصلية', 2000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/rujana.png" alt="رجينة او رزينة اصلية">
+    <h4>رجينة او رزينة اصلية</h4>
+    <p>مادة رجينة عالية الجودة تستخدم في تقوية الدوائر الإلكترونية.</p>
+    <div class="price">٣,٠٠٠ د.ع</div>
+    <button onclick="addToCart('رجينة او رزينة اصلية', 3000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/mankana.png" alt="منكنة (ماسكة بورد)">
+    <h4>منكنة (ماسكة بورد)</h4>
+    <p>أداة تثبيت البورد أثناء الصيانة، تساعد في العمل بثبات ودقة.</p>
+    <div class="price">٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('منكنة (ماسكة بورد)', 5000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/mankan nuhas.png" alt="منكنة (ماسكة بورد) نحاس ثقيل">
+    <h4>منكنة (ماسكة بورد) نحاس ثقيل</h4>
+    <p>ماسك بورد نحاسي ثقيل بجودة عالية وثبات مثالي أثناء العمل.</p>
+    <div class="price">٨,٠٠٠ د.ع</div>
+    <button onclick="addToCart('منكنة (ماسكة بورد) نحاس ثقيل', 8000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/3lba amonia.png" alt="علبة امونيا ضغط بلاستك">
+    <h4>علبة امونيا ضغط بلاستك</h4>
+    <p>علبة أمونيا بلاستيكية بضغط مثالي تساعد في تنظيف وتلميع المكونات الإلكترونية.</p>
+    <div class="price">٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('علبة امونيا ضغط بلاستك', 4000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/thata tener.png" alt="ضاغطة ثنر اصلي زجاج مقوى">
+    <h4>ضاغطة ثنر اصلي زجاج مقوى</h4>
+    <p>ضاغطة زجاجية أصلية بضغط مثالي لإزالة المواد اللاصقة.</p>
+    <div class="price">٨,٠٠٠ د.ع</div>
+    <button onclick="addToCart('ضاغطة ثنر اصلي زجاج مقوى', 8000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/furshaat keshb.png" alt="فرشاة تنظيف خشب أصلية">
+    <h4>فرشاة تنظيف خشب أصلية</h4>
+    <p>فرشاة تنظيف مصنوعة من الخشب بجودة أصلية، مثالية لتنظيف الأدوات والمكونات الإلكترونية بدقة. متينة وسهلة الاستخدام.</p>
+    <div class="price">٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('فرشاة تنظيف خشب أصلية', 4000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/mask board.png" alt="ماسك بورد جوكر ميكانيك">
+    <h4>ماسك بورد جوكر ميكانيك</h4>
+    <p>ماسك بورد جوكر من MECHANIC، يوفر ثباتاً مثالياً أثناء صيانة الأجهزة.</p>
+    <div class="price">٢٩,٠٠٠ د.ع</div>
+    <button onclick="addToCart('ماسك بورد جوكر ميكانيك', 29000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/mask board222.png" alt="ماسك بورد جوكر ميكانيك">
+    <h4>ماسك بورد جوكر ميكانيك</h4>
+    <p>ماسك بورد ثقيل بجودة عالية يضمن ثباتاً كاملاً أثناء الصيانة.</p>
+    <div class="price">٢٥,٠٠٠ د.ع</div>
+    <button onclick="addToCart('ماسك بورد جوكر ميكانيك', 25000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/shelder bakra.png" alt="شيلدر بكرة RELIFE">
+    <h4>شيلدر بكرة RELIFE</h4>
+    <p>شيلدر بكرة عالي الجودة من RELIFE، يستخدم لتغطية وحماية المكونات الحساسة.</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('شيلدر بكرة RELIFE', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/torna.png" alt="تورنة قلم شحن احترافية لبوردات الايفون">
+    <h4>تورنة قلم شحن احترافية لبوردات الايفون</h4>
+    <p>أداة احترافية من شركة (MA ANT) مصممة بدقة عالية لصيانة بوردات الايفون، توفر أداءً مثالياً مع تصميم مريح وسهل الاستخدام.</p>
+    <div class="price">٢٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('تورنة قلم شحن احترافية لبوردات الايفون', 24000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/ic clean.png" alt="منظف BGA - IC">
+    <h4>منظف BGA - IC</h4>
+    <p>وصول منظف BGA - IC الاحترافي، مثالي لإزالة البقايا وتحسين أداء المكونات الإلكترونية.</p>
+    <div class="price">٨,٠٠٠ د.ع</div>
+    <button onclick="addToCart('منظف BGA - IC', 8000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/3lba tnthef.png" alt="علبة تنظيف رأس أو تب كاوية سيم">
+    <h4>علبة تنظيف رأس أو تب كاوية سيم</h4>
+    <p>علبة تنظيف عملية لرأس أو تب كاوية، تزيل الأكسدة والرواسب لضمان أداء مثالي أثناء اللحام، مصنوعة من مواد عالية الجودة.</p>
+    <div class="price">٤,٠٠٠ د.ع</div>
+    <button onclick="addToCart('علبة تنظيف رأس أو تب كاوية سيم', 4000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/shafta 222222.png" alt="شافطة صولدر سوداء قوية">
+    <h4>شافطة صولدر سوداء قوية</h4>
+    <p>شافطة صولدر قوية باللون الأسود، مصممة لإزالة اللحام بسهولة وسرعة، بجودة عالية وأداء احترافي، ضرورية لكل فني صيانة.</p>
+    <div class="price">٧,٠٠٠ د.ع</div>
+    <button onclick="addToCart('شافطة صولدر سوداء قوية', 7000)">أضف إلى السلة</button>
+</div>
+
+<div class="product-card" data-category="منوع">
+    <img src="images/kasara back.png" alt="أداة تكسير ظهر ماركة RELIFE">
+    <h4>أداة تكسير ظهر ماركة RELIFE</h4>
+    <p>أداة احترافية من RELIFE مصممة لتكسير ظهر الأجهزة الزجاجي بسهولة ودقة دون إلحاق ضرر بالمكونات الداخلية، مثالية لفنيي الصيانة.</p>
+    <div class="price">١٢,٠٠٠ د.ع</div>
+    <button onclick="addToCart('أداة تكسير ظهر ماركة RELIFE', 12000)">أضف إلى السلة</button>
+</div>
+</div>
+</div>
+
+    <div class="cart-drawer" id="cartDrawer">
+        <i class="fas fa-times close-btn" onclick="toggleCart()" style="position: absolute; top: 10px; left: 10px; cursor: pointer;"></i>
+        <h3>فاتورة التسوق</h3>
+        <div class="cart-items-container" id="cartItems"></div>
+        <div class="cart-total-section">
+            <div class="total" id="cartTotal">المجموع: ٠ د.ع</div>
+        </div>
+    </div>
+
+    <button class="scroll-to-top" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <footer>
+        <p>© ٢٠٢٥ متجر عسل - جميع الحقوق محفوظة</p>
+    </footer>
+
+    <script>
+       let cart = [];
+let currentFilter = 'all';
+
+function toggleCart() { document.getElementById('cartDrawer').classList.toggle('active'); }
+
+function addToCart(productName, price) {
+    cart.push({ name: productName, price: price });
+    updateCart();
+}
+
+function updateCart() {
+    const cartItems = document.getElementById('cartItems');
+    const cartCount = document.getElementById('cartCount');
+    const cartTotal = document.getElementById('cartTotal');
+    cartItems.innerHTML = '';
+    let total = 0;
+
+    cart.forEach((item, index) => {
+        total += item.price;
+        cartItems.innerHTML += `
+            <div class="cart-item">
+                <span>${item.name} - ${item.price.toLocaleString()} د.ع</span>
+                <button onclick="removeFromCart(${index})">إزالة</button>
+            </div>
+        `;
+    });
+
+    cartCount.textContent = cart.length;
+    cartCount.classList.toggle('visible', cart.length > 0);
+    cartTotal.textContent = `المجموع: ${total.toLocaleString()} د.ع`;
+}
+
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCart();
+}
+
+function toggleDropdown() {
+    document.getElementById('dropdownOptions').classList.toggle('active');
+}
+
+function selectOption(value, text) {
+    document.getElementById('selectedCategory').textContent = text;
+    filterProducts(value);
+    toggleDropdown();
+}
+
+function filterProducts(category) {
+    currentFilter = category;
+    const products = document.querySelectorAll('.product-card');
+    const productsGrid = document.getElementById('productsGrid');
+    const searchInput = document.getElementById('searchInput').value.toLowerCase();
+    const scrollToTopBtn = document.querySelector('.scroll-to-top');
+
+    productsGrid.classList.add('visible');
+    let hasVisibleProducts = false;
+
+    products.forEach(product => {
+        const matchesCategory = category === 'all' || product.dataset.category === category;
+        const matchesSearch = searchInput ? product.querySelector('h4').textContent.toLowerCase().includes(searchInput) : true;
+        product.style.display = (matchesCategory && matchesSearch) ? 'block' : 'none';
+        if (matchesCategory && matchesSearch) {
+            hasVisibleProducts = true;
+        }
+    });
+
+    // تحديث ظهور الزر بناءً على النتايج وموقع التمرير
+    updateScrollToTopButton(hasVisibleProducts);
+    scrollToFirstResult();
+}
+
+function searchProducts() { filterProducts(currentFilter); }
+
+function scrollToFirstResult() {
+    setTimeout(() => {
+        const firstVisible = document.querySelector('.product-card:not([style*="display: none"])');
+        if (firstVisible) firstVisible.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+}
+
+async function refreshData() {
+    try {
+        // عرض رسالة التحميل
+        Swal.fire({
+            title: 'جاري التحديث',
+            text: 'يرجى الانتظار...',
+            allowOutsideClick: false,
+            background: 'linear-gradient(135deg, rgba(26, 58, 71, 0.9), rgba(10, 21, 26, 0.9))',
+            color: '#fff', // لون النص أبيض ليظهر بوضوح على الخلفية الداكنة
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // انتظار ثانية واحدة
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // عرض رسالة النجاح لمدة 1.5 ثانية ثم تختفي تلقائيًا
+        Swal.fire({
+            title: 'تم التحديث',
+            text: 'تم تحديث البيانات بنجاح',
+            icon: 'success',
+            background: 'linear-gradient(135deg, rgba(26, 58, 71, 0.9), rgba(10, 21, 26, 0.9))',
+            color: '#fff',
+            showConfirmButton: false, // إخفاء زر موافق
+            timer: 1500 // النافذة تختفي بعد 1.5 ثانية
+        });
+    } catch (error) {
+        // عرض رسالة الخطأ
+        Swal.fire({
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء التحديث',
+            icon: 'error',
+            background: 'linear-gradient(135deg, rgba(26, 58, 71, 0.9), rgba(10, 21, 26, 0.9))',
+            color: '#fff',
+            confirmButtonText: 'موافق'
+        });
+    }
+}
+
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const scrollToTopBtn = document.querySelector('.scroll-to-top');
+    scrollToTopBtn.classList.remove('visible'); // إخفاء الزر بعد الصعود
+}
+
+// دالة جديدة لتحديث حالة الزر بناءً على النتايج وموقع التمرير
+function updateScrollToTopButton(hasVisibleProducts) {
+    const scrollToTopBtn = document.querySelector('.scroll-to-top');
+    const scrollPosition = window.scrollY;
+
+    // الزر يظهر فقط إذا في نتايج ظاهرة وموقع التمرير أكبر من 100px
+    if (hasVisibleProducts && scrollPosition > 100) {
+        scrollToTopBtn.classList.add('visible');
+    } else {
+        scrollToTopBtn.classList.remove('visible');
+    }
+}
+
+// حدث التمرير لتحديث الزر ديناميكيًا
+window.addEventListener('scroll', () => {
+    const hasVisibleProducts = document.querySelectorAll('.product-card:not([style*="display: none"])').length > 0;
+    updateScrollToTopButton(hasVisibleProducts);
+});
+
+document.getElementById('searchInput').addEventListener('input', searchProducts);
+    </script>
+</body>
+</html>
